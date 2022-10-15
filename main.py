@@ -1,4 +1,4 @@
-import math
+from math import ceil
 
 numbers = ['Yek', 'Do', 'Seh', 'Chahar', 'Panj', 'Shish', 'Haft', 'Hasht', 'Noh']
 numbers += ['Dah', 'Yazdah', 'Davazdah', 'Sizdah', 'Chahardah', 'Panzdah', 'Shanzdah', 'Hefdah', 'Hejdah', 'Nozdah']
@@ -58,8 +58,8 @@ def number_to_text(number='0', text=''):
 
         text = number_to_text(number[:n], text)
 
-        # math.ceil(len(number)/3)-2 gives us the position of the scale in the short_scales list
-        text += ' ' + short_scales[math.ceil(len(number)/3)-2] if number[0] != '0' else ''
+        # ceil(len(number)/3)-2 gives us the position of the scale in the short_scales list
+        text += ' ' + short_scales[ceil(len(number)/3)-2] if number[0] != '0' else ''
         text += and_exp if number[n:].replace('0', '') != '' else ''
 
         return number_to_text(number[n:], text)
