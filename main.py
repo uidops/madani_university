@@ -12,10 +12,11 @@ short_scales += ['Tredecillion', 'Quattuordecillion', 'Quindecillion', 'Sexdecil
 short_scales += ['Octodecillion', 'Novemdecillion', 'Vigintillion']
 
 and_exp = 'o '
+currency = ' Rials'
 
 def main():
-    the_number = input('gimme the number: ')
-    print(number_to_text(the_number))
+    the_number = input('gimme the number: ') + '0'
+    print(number_to_text(the_number) + currency)
 
 
 def number_to_text(number='0', text=''):
