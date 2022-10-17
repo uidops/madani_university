@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from math import ceil
 
 numbers = ['یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه',
