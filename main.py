@@ -1,21 +1,23 @@
 from math import ceil
 
-numbers = ['Yek', 'Do', 'Seh', 'Chahar', 'Panj', 'Shish', 'Haft', 'Hasht', 'Noh']
-numbers += ['Dah', 'Yazdah', 'Davazdah', 'Sizdah', 'Chahardah', 'Panzdah', 'Shanzdah', 'Hefdah', 'Hejdah', 'Nozdah']
+numbers = ['یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه',
+        'ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هجده', 'نوزده']
 
-exceptions = ['Bist', 'Si', 'Chehel', 'Panjah', 'Shast', 'Haftad', 'Hashtad', 'Navad']
-exceptions += ['Sad', 'Divist', 'Sisad', 'Chahrsad', 'Pansad', 'Sheshsad', 'Haftsad', 'Hashtsad', 'Nohsad']
+excep_scales = ['بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود',
+        'صد', 'دویست', 'سیصد', 'چهارصد', 'پانصد', 'ششصد', 'هفتصد', 'هشتصد', 'نهصد']
 
-short_scales = ['Hezar', 'Million', 'Billion', 'Trillion', 'Quadrillion', 'Quintillion', 'Sextillion']
-short_scales += ['Septillion', 'Octillion', 'Nonillion', 'Decillion', 'Undecillion', 'Duodecillion']
-short_scales += ['Tredecillion', 'Quattuordecillion', 'Quindecillion', 'Sexdecillion', 'Septendecillion']
-short_scales += ['Octodecillion', 'Novemdecillion', 'Vigintillion']
+short_scales = ['هزار', 'میلیون', 'بیلیون', 'تریلیون', 'کوآدریلیون', 'کوینتیلیون', 'سکستیلیون',
+        'سپتیلیون', 'اکتیلیون', 'نانیلیون', 'دسیلیون', 'آندسیلیون', 'دیودسیلیون',
+        'تریدسیلیون', 'کواتیوردسیلیون', 'کویندسیلیون', 'سکسدسیلیون', 'سپتدسیلیون',
+        'اُکتودسیلیون', 'نومدسیلیون', 'ویجینتیلیون', 'آنویجینتیلیون', 'دویجینتیلیون', 'ترسویجینتیلیون',
+        'کوادرویجینتیلیون', 'کوینکاویجینتیلیون', 'سیسویجینتیلیون', 'سپتمویجینتیلیون', 'آکتوویجینتیلیون',
+        'نومویجینتیلیون', 'تریویجینتیلیون', 'آنتریویجینتیلیون', 'دوتریویجینتیلیون', 'گوگول']
 
-and_exp = 'o '
-currency = ' Rials'
+and_exp = ' و '
+currency = ' ریال'
 
 def main():
-    the_number = input('gimme the number: ') + '0'
+    the_number = input('number: ') + '0'
     print(number_to_text(the_number) + currency)
 
 
@@ -28,7 +30,7 @@ def number_to_text(number='0', text=''):
         if number == '0':
             # print 0 only when the number's length is 1
             if text == '':
-                text += 'Sefr'
+                text += 'صفر'
         else:
             text += numbers[int(number[0])-1]
 
@@ -38,13 +40,13 @@ def number_to_text(number='0', text=''):
             text += numbers[int(number[1]) + 9]
         else:
             # print 20-99
-            text += exceptions[int(number[0]) - 2] if number[0] != '0' else ''
+            text += excep_scales[int(number[0]) - 2] if number[0] != '0' else ''
             text += and_exp if number[1:].replace('0', '') != '' else ''
             return number_to_text(number[1:], text)
 
     elif len(number) == 3:
         # print 100-999
-        text += exceptions[int(number[0]) + 7] if number[0] != '0' else ''
+        text += excep_scales[int(number[0]) + 7] if number[0] != '0' else ''
         text += and_exp if number[1:].replace('0', '') != '' else ''
         return number_to_text(number[1:], text)
 
@@ -71,10 +73,10 @@ def strip_number(number):
     """
     Remove the extra zeros from the number
     """
-
+    i = 0
     for i,j in enumerate(number):
         if j != '0':
-            break;
+            break
             
     return number[i:]
 
