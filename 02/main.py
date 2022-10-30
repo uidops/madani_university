@@ -1,17 +1,14 @@
 #!/usr/bin/python3.11
 
-# Javad Bajelan - 4011833206
-
 import cmath
 
 print("-------------------------exercises1-------------------------")
 
 print('ax² + bx + c = 0')
 a, b, c = map(float, input('a b c: ').split(' '))
-delta = (b**2) - (4*a*c)
 
-x1 = (-b + cmath.sqrt(delta))/(2*a)
-x2 = (-b - cmath.sqrt(delta))/(2*a)
+x1 = (-b + cmath.sqrt((b**2) - (4*a*c)))/(2*a)
+x2 = (-b - cmath.sqrt((b**2) - (4*a*c)))/(2*a)
 
 if not x1.imag:
     x1 = x1.real
@@ -23,7 +20,12 @@ print('x1 = {}\nx2 = {}'.format(x1, x2))
 
 print("-------------------------exercises2-------------------------")
 
-number = int(input('number: '))
+number = input('number: ')
+if len(number) != 6:
+    print("The length is not 6. actually it does not matter, you can remove this code.")
+    exit(1);
+
+number = int(number)
 answer = 0
 
 while number:
