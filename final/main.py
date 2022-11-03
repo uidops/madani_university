@@ -1,6 +1,5 @@
-#!/usr/bin/python
-
-from math import ceil
+#!/usr/bin/env python
+# coding: utf-8
 
 numbers = ['یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه',
         'ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هجده', 'نوزده']
@@ -15,7 +14,7 @@ short_scales = ['هزار', 'میلیون', 'بیلیون', 'تریلیون', '�
         'کوادرویجینتیلیون', 'کوینکاویجینتیلیون', 'سیسویجینتیلیون', 'سپتمویجینتیلیون', 'آکتوویجینتیلیون',
         'نومویجینتیلیون', 'تریویجینتیلیون', 'آنتریویجینتیلیون', 'دوتریویجینتیلیون', 'گوگول']
 
-and_exp = ' و '
+separator = ' و '
 currency = ' ریال'
 
 def main():
@@ -34,7 +33,7 @@ def number_to_text(number='0', text=''):
             if text == '':
                 text += 'صفر'
         else:
-            text += numbers[int(number[0])-1]
+            text += numbers[int(number[0]) - 1]
 
     elif len(number) == 2:
         if number[0] == '1':
@@ -43,28 +42,28 @@ def number_to_text(number='0', text=''):
         else:
             # print 20-99
             text += excep_scales[int(number[0]) - 2] if number[0] != '0' else ''
-            text += and_exp if number[1:].replace('0', '') != '' else ''
+            text += separator if number[1:].replace('0', '') != '' else ''
             return number_to_text(number[1:], text)
 
     elif len(number) == 3:
         # print 100-999
         text += excep_scales[int(number[0]) + 7] if number[0] != '0' else ''
-        text += and_exp if number[1:].replace('0', '') != '' else ''
+        text += separator if number[1:].replace('0', '') != '' else ''
         return number_to_text(number[1:], text)
 
     else:
         # calculate the multiple of the scale
         # for example, for number 12,124,291, the output is 12
         #                         1,000       the output is  1
-        n = len(number)%3
+        n = len(number) % 3
         n = 3 if not n else n
 
 
         text = number_to_text(number[:n], text)
 
         # ceil(len(number)/3)-2 gives us the position of the scale in the short_scales list
-        text += ' ' + short_scales[ceil(len(number)/3)-2] if number[0] != '0' else ''
-        text += and_exp if number[n:].replace('0', '') != '' else ''
+        text += ' ' + short_scales[ceil(len(number) / 3) - 2] if number[0] != '0' else ''
+        text += separator if number[n:].replace('0', '') != '' else ''
 
         return number_to_text(number[n:], text)
 
@@ -81,6 +80,13 @@ def strip_number(number):
             break
             
     return number[i:]
+
+def ceil(x):
+    """
+    Ceiling of x
+    """
+    return int(-(-x // 1))
+
 
 if __name__ == '__main__':
     main()
