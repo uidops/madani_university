@@ -19,7 +19,12 @@ currency = ' ریال'
 
 def main():
     the_number = input('number: ') + '0'
-    print(number_to_text(the_number) + currency)
+    neg = ''
+    if the_number[0] == '-':
+        the_number = the_number[1:]
+        neg = 'منفی '
+
+    print(neg + number_to_text(the_number) + currency)
 
 
 def number_to_text(number='0', text=''):
