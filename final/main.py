@@ -22,7 +22,8 @@ def main():
     neg = ''
     if the_number[0] == '-':
         the_number = the_number[1:]
-        neg = 'منفی '
+        if int(the_number):
+            neg = 'منفی '
 
     print(neg + number_to_text(the_number) + currency)
 
