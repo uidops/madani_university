@@ -13,15 +13,9 @@ def main():
         print("Where's the second number?")
         exit(1)
 
-    if not nums[0] or not nums[1]:
-        print(max(nums))
-        exit(0)
-
-    nums.sort()
-    rem = -1
-    while rem:
-        rem = nums[0]%nums[1]
-        nums[0], nums[1] = nums[1], rem
+    nums.sort(reverse=True)
+    while nums[1]:
+        nums[0], nums[1] = nums[1], nums[0]%nums[1]
 
     print(nums[0])
 
@@ -33,6 +27,7 @@ def main():
         import numpy
         print(numpy.gcd(*nums))
     """
+
 
 if __name__ == '__main__':
     main()
