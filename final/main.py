@@ -1,97 +1,72 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-numbers = ['یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه',
-        'ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هجده', 'نوزده']
+numbers = ('صفر', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه',
+        'ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هجده', 'نوزده')
 
-excep_scales = ['بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود',
-        'صد', 'دویست', 'سیصد', 'چهارصد', 'پانصد', 'ششصد', 'هفتصد', 'هشتصد', 'نهصد']
+excep_scales = ('بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود',
+        'صد', 'دویست', 'سیصد', 'چهارصد', 'پانصد', 'ششصد', 'هفتصد', 'هشتصد', 'نهصد')
 
-short_scales = ['هزار', 'میلیون', 'بیلیون', 'تریلیون', 'کوآدریلیون', 'کوینتیلیون', 'سکستیلیون',
+short_scales = ('هزار', 'میلیون', 'بیلیون', 'تریلیون', 'کوآدریلیون', 'کوینتیلیون', 'سکستیلیون',
         'سپتیلیون', 'اکتیلیون', 'نانیلیون', 'دسیلیون', 'آندسیلیون', 'دیودسیلیون',
         'تریدسیلیون', 'کواتیوردسیلیون', 'کویندسیلیون', 'سکسدسیلیون', 'سپتدسیلیون',
         'اُکتودسیلیون', 'نومدسیلیون', 'ویجینتیلیون', 'آنویجینتیلیون', 'دویجینتیلیون', 'ترسویجینتیلیون',
         'کوادرویجینتیلیون', 'کوینکاویجینتیلیون', 'سیسویجینتیلیون', 'سپتمویجینتیلیون', 'آکتوویجینتیلیون',
-        'نومویجینتیلیون', 'تریویجینتیلیون', 'آنتریویجینتیلیون', 'دوتریویجینتیلیون', 'گوگول']
+        'نومویجینتیلیون', 'تریویجینتیلیون', 'آنتریویجینتیلیون', 'دوتریویجینتیلیون', 'گوگول')
 
 separator = ' و '
 currency = ' ریال'
 
 def main():
-    the_number = input('number: ') + '0'
+    number = input('number: ')
     neg = ''
-    if the_number[0] == '-':
-        the_number = the_number[1:]
-        if int(the_number):
+    if number[0] == '-':
+        number = number[1:]
+        if int(number):
             neg = 'منفی '
 
-    print(neg + number_to_text(the_number) + currency)
+    print(neg + number_to_text(number) + currency)
 
 
-def number_to_text(number='0', text=''):
-    number = strip_number(number)
-    if number == None:
+def number_to_text(number='0', text='', flag=0):
+    number = number.lstrip('0')
+    if not len(number):
         return text
 
+    text += separator if flag and set(number) != {'0'} else ''
     if len(number) == 1:
         if number == '0':
-            # print 0 only when the number's length is 1
-            if text == '':
-                text += 'صفر'
+            if not bool(text):
+                text += numbers[0]
+
         else:
-            text += numbers[int(number[0]) - 1]
+            text += numbers[int(number[0])]
 
     elif len(number) == 2:
         if number[0] == '1':
-            # print 10-19
-            text += numbers[int(number[1]) + 9]
+            text += numbers[int(number[1]) + 10]
+
         else:
-            # print 20-99
-            text += excep_scales[int(number[0]) - 2] if number[0] != '0' else ''
-            text += separator if number[1:].replace('0', '') != '' else ''
-            return number_to_text(number[1:], text)
+            text += excep_scales[int(number[0]) - 2]
+            return number_to_text(number[1:], text, 1)
 
     elif len(number) == 3:
-        # print 100-999
-        text += excep_scales[int(number[0]) + 7] if number[0] != '0' else ''
-        text += separator if number[1:].replace('0', '') != '' else ''
-        return number_to_text(number[1:], text)
+        if number[0] != '0':
+            text += excep_scales[int(number[0]) + 7]
+
+        return number_to_text(number[1:], text, 1)
 
     else:
-        # calculate the multiple of the scale
-        # for example, for number 12,124,291, the output is 12
-        #                         1,000       the output is  1
         n = len(number) % 3
-        n = 3 if not n else n
-
+        n += (n+3) * (not n)
 
         text = number_to_text(number[:n], text)
+        if number[0] != '0':
+            text += ' ' + short_scales[int(-(-(len(number) / 3)//1)) - 2]
 
-        # ceil(len(number)/3)-2 gives us the position of the scale in the short_scales list
-        text += ' ' + short_scales[ceil(len(number) / 3) - 2] if number[0] != '0' else ''
-        text += separator if number[n:].replace('0', '') != '' else ''
-
-        return number_to_text(number[n:], text)
+        return number_to_text(number[n:], text, 1)
 
     return text
-
-
-def strip_number(number):
-    """
-    Remove the extra zeros from the number
-    """
-    i = 0
-    for i,j in enumerate(number):
-        if j != '0':
-            break
-            
-    return number[i:]
-
-def ceil(x):
-    """
-    Ceiling of x
-    """
-    return int(-(-x // 1))
 
 
 if __name__ == '__main__':
