@@ -34,7 +34,7 @@ main(void)
 	fflush(stdout);
 
 	if (scanf("%u %u %u", &input.R, &input.G, &input.B) != 3)
-		errx(EXIT_FAILURE, "An error occured!");
+		errx(EXIT_FAILURE, "An error occurred!");
 
 	printf("%s\n", detect_color(input));
 	return EXIT_SUCCESS;
