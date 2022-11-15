@@ -15,15 +15,19 @@ colors = {
 
 
 def detect_color(color):
-    answers = {}
+    answer = None, 442
     for key, value in colors.items():
-        answers[key] = sqrt((color['R'] - value['R'])**2 +
+        x = sqrt((color['R'] - value['R'])**2 +
                              (color['G'] - value['G'])**2 +
                              (color['B'] - value['B'])**2)
 
-    answers = dict(sorted(answers.items(), key=lambda x: x[1]))
-    keys, values = tuple(answers.keys()), tuple(answers.values())
-    return None if values[0] == values[1] else keys[0]
+        if x == answer[1]:
+            answer = None, None
+            break
+
+        answer = (key, x) if x < answer[1] else answer
+
+    return answer[0]
 
 
 color = dict(zip(('R', 'G', 'B'), map(int, input('R G B: ').split())))
