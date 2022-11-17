@@ -20,7 +20,7 @@ sub detect_color
             ($colors{$_}{'B'} - $input{'B'})**2);
 
         if ($x == $answer[1]) {
-            @answer = (undef, undef);
+            @answer = ('None', undef);
             break;
         }
 
@@ -33,7 +33,7 @@ sub detect_color
 }
 
 
-print "R G B: ";
+print 'R G B: ';
 my ($r, $g, $b) = split /\s */, <>;
 $output = detect_color(('R' => int($r), 'G' => int($g), 'B' => int($b)));
 print "$output\n";
