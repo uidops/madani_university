@@ -29,7 +29,7 @@ char		*detect_color(const struct color);
 int
 main(void)
 {
-	struct color input = {NULL, 0xCC, 0xCC, 0xCC};
+	struct color input = {NULL, 0, 0, 0};
 	fputs("R G B: ", stdout);
 	fflush(stdout);
 
