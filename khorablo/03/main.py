@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from math import sqrt
+import sys
 
 colors = {
         "lightsalmon": {"R": 255, "G": 160, "B": 122},
@@ -30,5 +31,9 @@ def detect_color(color):
     return answer[0]
 
 
-color = dict(zip(('R', 'G', 'B'), map(int, input('R G B: ').split())))
+if sys.stdin.isatty():
+    color = dict(zip(('R', 'G', 'B'), map(int, input('R G B: ').split())))
+else:
+    color = dict(zip(('R', 'G', 'B'), map(int, sys.stdin.read().split())))
+
 print(detect_color(color))
