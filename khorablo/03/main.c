@@ -5,7 +5,7 @@
 
 struct color {
 	char *color_name;
-	unsigned R, G, B;
+	int R, G, B;
 };
 
 struct answer {
@@ -33,7 +33,7 @@ main(void)
 	fputs("R G B: ", stdout);
 	fflush(stdout);
 
-	if (scanf("%u %u %u", &input.R, &input.G, &input.B) != 3)
+	if (scanf("%d %d %d", &input.R, &input.G, &input.B) != 3)
 		errx(EXIT_FAILURE, "An error occurred!");
 
 	printf("%s\n", detect_color(input));
@@ -46,9 +46,9 @@ detect_color(const struct color input)
 	struct answer answer = {NULL, 442.0};
 
 	for (size_t i=0; i < sizeof(colors)/sizeof(struct color); i++) {
-		double x = sqrt((input.R - colors[i].R) * (input.R - colors[i].R)
-				+ (input.G - colors[i].G) * (input.G - colors[i].G) 
-				+ (input.B - colors[i].B) * (input.B - colors[i].B));
+		double x = sqrt(pow(input.R - colors[i].R, 2) +
+					pow(input.G - colors[i].G, 2) +
+					pow(input.B - colors[i].B, 2));
 
 		if (x == answer.deviation) {
 			answer.color_name = NULL;
