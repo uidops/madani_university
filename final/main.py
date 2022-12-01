@@ -2,7 +2,6 @@
 # coding: utf-8
 
 import math
-import sys
 
 
 numbers = ['صفر', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه',
@@ -21,22 +20,11 @@ short_scales = ['هزار', 'میلیون', 'بیلیون', 'تریلیون', '�
 
 separator = 'و'
 __currency = 'ریال'
-negative = 'منفی '
+negative = 'منفی'
 
 
 def __main():
-    if len(sys.argv) != 2:
-        print(f'Usage: {sys.argv[0]} [num]')
-        sys.exit(1)
-
-    number = sys.argv[1].strip()# + '0'
-    if number.isdigit() or (number[0] in ('+', '-') and number[1:].isdigit()):
-        number = int(number)
-
-    else:
-        print('The input is not an integer')
-        sys.exit(1)
-
+    number = int(input('num: ').strip())*10
     print(number_to_text(number) + ' ' + __currency)
 
 
@@ -50,7 +38,7 @@ def number_to_text(number=0, text='', flag=0):
 
     if number < 0:
         number = abs(number)
-        text += negative
+        text += negative + ' '
 
     length = math.floor(math.log10(number)) + 1
 
