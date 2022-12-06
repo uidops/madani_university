@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 print('---------------exercises1---------------')
 
 array = list(map(int, input('array: ').split()))
@@ -65,28 +64,27 @@ else:
 
 print('---------------exercises5---------------')
 
-matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
-print(matrix)
+matrix = []
+n = int(input('the number of rows: '))
+for _ in range(n):
+    matrix.append(list(map(int, input(f'row {_}: ').split())))
 
-for col in range(len(matrix[0])):
-    print(matrix[0][col], end=' ')
+t, b, r, l = 0, len(matrix)-1, len(matrix[0])-1, 0
 
-for row in range(1, len(matrix)):
-    print(matrix[row][col], end=' ')
+while t <= b and l <= r:
+    for i in range(l, r+1):
+        print(matrix[t][i], end=' ')
 
-for col in range(len(matrix[row])-2, -1, -1):
-    print(matrix[row][col], end=' ')
+    for i in range(t+1, b+1):
+        print(matrix[i][r], end=' ')
 
-for row in range(len(matrix)-2, 0, -1):
-    print(matrix[row][col], end=' ')
+    if l < r and t < b:
+        for i in range(r-1, l, -1):
+            print(matrix[b][i], end=' ')
 
-for col in range(1, len(matrix[row])-1):
-    print(matrix[row][col], end=' ')
+        for i in range(b, t, -1):
+            print(matrix[i][l], end=' ')
 
-for row in range(2, len(matrix)-1):
-    print(matrix[row][col], end=' ')
-
-for col in range(1, len(matrix[row])-2):
-    print(matrix[row][col], end=' ')
+    t, b, r, l = t+1, b-1, r-1, l+1
 
 print()
