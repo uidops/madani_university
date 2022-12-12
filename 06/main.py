@@ -14,8 +14,8 @@ def strtol(s: str) -> float:
 
 
 def read_csv(pathname: str, sep=',') -> list:
-    csv_data = []
-    with open(pathname) as f:
+    csv_data = list()
+    with open(pathname, 'r') as f:
         keys = f.readline().strip().split(sep)
         for row in f:
             csv_data.append(dict(zip(keys, map(strtol, row.strip().split(sep)))))
@@ -63,7 +63,7 @@ def cluster_correction(clusters: list, x: list) -> tuple:
 
 
 def k_means(data: list, k: int) -> tuple:
-    clusters = [[] for _ in range(k)]
+    clusters = [list() for _ in range(k)]
     x = secrets.SystemRandom().sample(data, k)
 
     for record in data:
