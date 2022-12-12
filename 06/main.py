@@ -1,16 +1,9 @@
 #!/usr/bin/env python
 
+import math
 import operator
 import re
 import secrets
-import sys
-
-
-# sepal_length, sepal_width, petal_length, petal_width, class
-eucidistance = lambda x, y: ((y['sepal_length'] - x['sepal_length'])**2 +
-                            (y['sepal_width']   - x['sepal_width'])**2 +
-                            (y['petal_length']  - x['petal_length'])**2 +
-                            (y['petal_width']   - x['petal_width'])**2)**.5
 
 
 def strtol(s: str) -> float:
@@ -22,17 +15,21 @@ def strtol(s: str) -> float:
 
 def read_csv(pathname: str, sep=',') -> list:
     csv_data = []
-    try:
-        with open(pathname) as f:
-            keys = f.readline().strip().split(sep)
-            for row in f:
-                csv_data.append(dict(zip(keys, map(strtol, row.strip().split(sep)))))
-
-    except FileNotFoundError as err:
-        sys.stderr.write(str(err)+'\n')
-        sys.exit(1)
+    with open(pathname) as f:
+        keys = f.readline().strip().split(sep)
+        for row in f:
+            csv_data.append(dict(zip(keys, map(strtol, row.strip().split(sep)))))
 
     return csv_data
+
+
+def eucidistance(x: dict, y: dict) -> float:
+    distance = 0
+    for key in x.keys():
+        if type(x[key]) == float:
+            distance += math.pow(y[key] - x[key], 2)
+
+    return math.sqrt(distance)
 
 
 def means(cluster: list) -> dict:
@@ -47,63 +44,54 @@ def means(cluster: list) -> dict:
     return data
 
 
-def eucid_cluster(data: list, k: int) -> tuple:
-    clusters = []
-    x = []
-    for _ in range(k):
-        d = secrets.choice(data)
-        while d in x:
-            d = secrets.choice(data)
+def cluster_correction(clusters: list, x: list) -> tuple:
+    for index, cluster in enumerate(clusters):
+       x[index] = means(cluster)
 
-        x.append(d)
-        clusters.append([])
+    for index, cluster in enumerate(clusters.copy()):
+        for record in cluster:
+            n = (None, math.inf)
+            for i, r in enumerate(x):
+                d = eucidistance(r, record)
+                if d < n[1]:
+                    n = (i, d)
 
-    for record in data:
-        n = (None, sys.maxsize)
-        for r in x:
-            d = eucidistance(r, record)
-            if n[1] > d:
-                n = (x.index(r), d)
-
-        clusters[n[0]].append(record)
+            clusters[n[0]].append(record)
+            clusters[index].remove(record)
 
     return clusters, x
 
 
-def cluster_correction(data: list, x: list) -> tuple:
-    for index, cluster in enumerate(data):
-       x[index] = means(cluster)
+def k_means(data: list, k: int) -> tuple:
+    clusters = [[] for _ in range(k)]
+    x = secrets.SystemRandom().sample(data, k)
 
-    for index, cluster in enumerate(data.copy()):
-        for record in cluster:
-            n = (None, sys.maxsize)
-            for r in x:
-                d = eucidistance(r, record)
-                if n[1] > d:
-                    n = (index, d)
+    for record in data:
+        n = (None, math.inf)
+        for i, r in enumerate(x):
+            d = eucidistance(r, record)
+            if d < n[1]:
+                n = (i, d)
 
-            if n[0] != index:
-                data[n[0]].append(record)
-                data[index].remove(record)
-            
-    return data, x
+        clusters[n[0]].append(record)
+
+    clusters1, x1 = cluster_correction(clusters, x)
+    n = 0
+    while n < 2:
+        clusters, x = clusters1, x1
+        clusters1, x1 = cluster_correction(clusters, x)
+        if x == x1:
+            n += 1
+
+    return clusters1
 
 
 if __name__ == '__main__':
     csv_data = read_csv('iris.csv')
     secrets.SystemRandom().shuffle(csv_data)
 
-    data, x = eucid_cluster(csv_data, 3)
-    data1, x1 = cluster_correction(data, x)
-
-    n = 0
-    while n < 2:
-        data, x = data1, x1
-        data1, x1 = cluster_correction(data, x)
-        if x == x1:
-            n += 1
-
-    for index, cluster in enumerate(data1):
+    clusters = k_means(csv_data, 3)
+    for index, cluster in enumerate(clusters):
         print('\n-- Cluster {}: {}'.format(index, len(cluster)))
         for _ in cluster:
             print(_)
