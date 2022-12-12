@@ -1,36 +1,39 @@
 #!/usr/bin/env python
 
-def encrypt(data):
-    data = data[:-1].lower().split(' ')
+from math import sqrt
+import sys
 
-    for i, j in enumerate(data):
-        if j[0] in ('a', 'e', 'i', 'o', 'u'):
-            j = j[1:] + j[0] + 'v'
-        elif len(j) > 2:
-            j = j[2:] + j[:2]
+colors = {
+        "lightsalmon": {"R": 255, "G": 160, "B": 122},
+        "salmon": {"R": 250, "G": 128, "B": 114},
+        "darksalmon": {"R": 233, "G": 150, "B": 122},
+        "lightcoral": {"R": 240, "G": 128, "B": 128},
+        "indianred": {"R": 205, "G": 92, "B": 92},
+        "red": {"R": 255, "G": 0, "B": 0},
+        #"white": {"R": 255, "G": 255, "B": 255},
+        #"black": {"R": 0, "G": 0, "B": 0},
+}
 
-        data[i] = j
 
-    return ' '.join(data) + '.'
+def detect_color(color):
+    answer = None, 442
+    for key, value in colors.items():
+        x = sqrt((color['R'] - value['R'])**2 +
+                             (color['G'] - value['G'])**2 +
+                             (color['B'] - value['B'])**2)
 
-def decrypt(data):
-    data = data[:-1].lower().split(' ')
+        if x == answer[1]:
+            answer = None, None
+            break
 
-    for i, j in enumerate(data):
-        if j[-1] == 'v' and j[-2] in ('a', 'e', 'i', 'o' ,'u'):
-            j = j[-2] + j[:-2]
-        elif len(j) > 2:
-            j = j[-2:] + j[:-2]
+        answer = (key, x) if x < answer[1] else answer
 
-        data[i] = j
+    return answer[0]
 
-    return ' '.join(data) + '.'
 
-the_input = input('give me the encrypted data to decrypt: ')
+if sys.stdin.isatty():
+    color = dict(zip(('R', 'G', 'B'), map(int, input('R G B: ').split())))
+else:
+    color = dict(zip(('R', 'G', 'B'), map(int, sys.stdin.read().split())))
 
-de = decrypt(the_input)
-print('\ndecrypted data:', de)
-print('encrypted data:', encrypt(de))
-
-# INPUT : we lwaysav ytr to epke urov tada cretse.
-# OUTPUT: we always try to keep our data secret.
+print(detect_color(color))
