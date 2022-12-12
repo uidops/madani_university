@@ -1,57 +1,65 @@
 #!/usr/bin/env python
 
-import random
+import operator
+import re
+import secrets
 import sys
 
-# sepal_length,sepal_width,petal_length,petal_width
-eucidistance = lambda x, y: ((y['sepal_length'] - x['sepal_length'])**2 +
-                            (y['sepal_width'] - x['sepal_width'])**2 +
-                            (y['petal_length'] - x['petal_length'])**2 +
-                            (y['petal_width'] - x['petal_width'])**2)**.5
 
-def strtol(s='0'):
-    try:
+# sepal_length, sepal_width, petal_length, petal_width, class
+eucidistance = lambda x, y: ((y['sepal_length'] - x['sepal_length'])**2 +
+                            (y['sepal_width']   - x['sepal_width'])**2 +
+                            (y['petal_length']  - x['petal_length'])**2 +
+                            (y['petal_width']   - x['petal_width'])**2)**.5
+
+
+def strtol(s: str) -> float:
+    if re.match('^[-+]?\d+(.\d+)?$', s):
         s = float(s)
-    except:
-        pass
 
     return s
 
 
-def read_csv(fname, sep=','):
+def read_csv(pathname: str, sep=',') -> list:
     csv_data = []
-    with open(fname) as f:
-        keys = f.readline().strip().split(sep)
-        for row in f:
-            csv_data.append(dict(zip(keys, map(strtol, row.strip().split(sep)))))
+    try:
+        with open(pathname) as f:
+            keys = f.readline().strip().split(sep)
+            for row in f:
+                csv_data.append(dict(zip(keys, map(strtol, row.strip().split(sep)))))
+
+    except FileNotFoundError as err:
+        sys.stderr.write(str(err)+'\n')
+        sys.exit(1)
 
     return csv_data
 
 
-def means(cluster):
+def means(cluster: list) -> dict:
     data = dict()
-    length = len(cluster)
-    for record in cluster:
-        for key, value in record.items():
-            if type(value) == float:
-                data[key] = data.get(key, 0) + value/length
+    for key in cluster[0]:
+        if type(cluster[0][key]) == float:
+            data[key] = data.get(key, 0) + sum(map(operator.itemgetter(key), cluster))
+
+    for key in data:
+        data[key] = data[key]/len(cluster)
 
     return data
 
 
-def eucid_cluster(data, k):
+def eucid_cluster(data: list, k: int) -> tuple:
     clusters = []
     x = []
     for _ in range(k):
-        d = random.choice(data)
+        d = secrets.choice(data)
         while d in x:
-            d = random.choice(data)
+            d = secrets.choice(data)
 
         x.append(d)
         clusters.append([])
 
     for record in data:
-        n = (-1, sys.maxsize)
+        n = (None, sys.maxsize)
         for r in x:
             d = eucidistance(r, record)
             if n[1] > d:
@@ -62,44 +70,40 @@ def eucid_cluster(data, k):
     return clusters, x
 
 
-def cluster_correction(data, x):
+def cluster_correction(data: list, x: list) -> tuple:
     for index, cluster in enumerate(data):
        x[index] = means(cluster)
 
-    for index, cluster in enumerate(data):
+    for index, cluster in enumerate(data.copy()):
         for record in cluster:
-            n = (-1, sys.maxsize)
+            n = (None, sys.maxsize)
             for r in x:
                 d = eucidistance(r, record)
                 if n[1] > d:
                     n = (index, d)
 
-            data[n[0]].append(record)
-            data[index].remove(record)
+            if n[0] != index:
+                data[n[0]].append(record)
+                data[index].remove(record)
             
     return data, x
 
 
 if __name__ == '__main__':
     csv_data = read_csv('iris.csv')
-    while True:
-        data, x = eucid_cluster(csv_data, 3)
+    secrets.SystemRandom().shuffle(csv_data)
+
+    data, x = eucid_cluster(csv_data, 3)
+    data1, x1 = cluster_correction(data, x)
+
+    n = 0
+    while n < 2:
+        data, x = data1, x1
         data1, x1 = cluster_correction(data, x)
-        while data != data1:
-            data, x = data1, x1
-            data1, x1 = cluster_correction(data, x)
+        if x == x1:
+            n += 1
 
-        if len(data1[0]) == len(data1[1]) == len(data1[2]):
-            print(f'**Cluster 1 {len(data1[0])}')
-            for _ in data1[0]:
-                print(_)
-
-            print(f'\n** Cluster 2 {len(data1[1])}')
-            for _ in data1[1]:
-                print(_)
-
-            print(f'\n** Cluster 3 {len(data1[2])}')
-            for _ in data1[2]:
-                print(_)
-
-            break
+    for index, cluster in enumerate(data1):
+        print('\n-- Cluster {}: {}'.format(index, len(cluster)))
+        for _ in cluster:
+            print(_)
