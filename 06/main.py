@@ -7,7 +7,7 @@ import secrets
 
 
 def strtol(s: str) -> float:
-    if re.match('^[-+]?\d+(.\d+)?$', s):
+    if re.match(r'^[-+]?\d+(.\d+)?$', s):
         s = float(s)
 
     return s
@@ -34,6 +34,9 @@ def eucidistance(x: dict, y: dict) -> float:
 
 def means(cluster: list) -> dict:
     data = dict()
+    if cluster == list():
+        return data
+
     for key in cluster[0]:
         if type(cluster[0][key]) == float:
             data[key] = data.get(key, 0) + sum(map(operator.itemgetter(key), cluster))
@@ -77,7 +80,7 @@ def k_means(data: list, k: int) -> tuple:
 
     clusters1, x1 = cluster_correction(clusters, x)
     n = 0
-    while n < 2:
+    while n < k-1:
         clusters, x = clusters1, x1
         clusters1, x1 = cluster_correction(clusters, x)
         if x == x1:
