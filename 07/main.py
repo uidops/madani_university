@@ -47,23 +47,22 @@ days_of_months = {'Farvardin': 31, 'Ordibehesht': 31, 'Khordaad': 31,
                   'Mehr': 30, 'Ababn': 30, 'Azar': 30,
                   'Dey': 30, 'Bahman': 30, 'Esfand': 29}
 
+seasons = ('Bahar', 'Tabestan', 'Paeez', 'Zemestan')
 
 def datebyday(day: int) -> tuple:
-    day = day%sum(days_of_months.values())
+    day = day%sum(days_of_months.values()) or sum(days_of_months.values())
+
     for month in days_of_months:
         if day <= days_of_months[month]:
             break
 
         day -= days_of_months[month]
 
-    return month, day
+    return seasons[tuple(days_of_months.keys()).index(month)//3], month, day
 
 
 day = int(input('day of year: '))
-if day:
-    print(datebyday(day))
-else:
-    print('zero?')
+print(datebyday(day))
 
 
 print('--------------------exercises4--------------------')
@@ -107,12 +106,11 @@ def is_armstrong(n: int) -> bool:
 
     x = n
     length = math.floor(math.log10(n)) + 1
-    answer = 0
-    while x != 0:
-        answer += math.pow(x%10, length)
+    while x:
+        n -= math.pow(x%10, length)
         x //= 10
 
-    return n == answer
+    return not n
 
 
 n = int(input('number: '))
@@ -200,7 +198,7 @@ def computer_choice(matrix: list, easy_mode: int) -> tuple:
 
 
 length = int(input('n: '))
-if length < 3 and length&1:
+if length < 3 or not length&1:
     print(f'{length}x{length} is not a valid board')
     sys.exit(0)
 
