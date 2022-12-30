@@ -2,7 +2,7 @@
 
 def rot(s: str, n=1, k='a:d/fc') -> str:
     if s.startswith(k):
-        n *= -1
+        n = ~(n - 1)
         s = s[len(k):]
         k = ''
 
