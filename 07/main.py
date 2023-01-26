@@ -69,18 +69,11 @@ print('--------------------exercises4--------------------')
 
 def facture(clients: list) -> list:
     factures = []
+    funcs = {'h': (500, 100, math.inf, 0), 'i': (750, 1E3, 4E6, 25E-5), 'e': (600, 1500, 2E6, 4E-5)}
     for client in clients:
         used_water, client_type = client.values()
-        if client_type.lower() == 'h':
-            factures.append(used_water/100*500)
-        elif client_type.lower() == 'i':
-            n = (4E6, used_water-4E6) if used_water > 4E6 else (used_water, 0)
-            factures.append((n[0]/1000*750) + (n[1]*(750.00025)))
-        elif client_type.lower() == 'e':
-            n = (2E6, used_water-2E6) if used_water > 2E6 else (used_water, 0)
-            factures.append((n[0]/1500*600) + (n[1]*(600.00004)))
-        else:
-            factures.append(0)
+        func = funcs.get(client_type.lower(), (0, 1, 0, 0))
+        factures.append(used_water*func[0]/func[1] + max(0, used_water-func[2])*func[3])
 
     return factures
 
