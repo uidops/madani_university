@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import math
+import sys
 
 def main():
     print('--------------exercises1--------------')
@@ -11,7 +12,7 @@ def main():
     nums = list(map(lambda x: abs(int(x)), input('num1 num2: ').split()))[:2]
     if len(nums) < 2:
         print("Where's the second number?")
-        exit(1)
+        sys.exit(1)
 
     nums.sort(reverse=True)
     while nums[1]:
@@ -19,14 +20,13 @@ def main():
 
     print(nums[0])
 
-    """
-    Another solution:
-        import math
-        print(math.gcd(*nums))
+# Another solution:
 
-        import numpy
-        print(numpy.gcd(*nums))
-    """
+#    import math
+#    print(math.gcd(*nums))
+
+#    import numpy
+#    print(numpy.gcd(*nums))
 
 
 if __name__ == '__main__':

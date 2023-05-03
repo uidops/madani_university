@@ -15,10 +15,10 @@ print('---------------exercises2---------------')
 
 array = list(map(int, input('array: ').split()))
 
-for index in range(len(array)):
+for index, item in enumerate(array):
     n = 0
-    for jndex in range(index+1, len(array)):
-        if array[index] > array[jndex]:
+    for jtem in array[index+1:]:
+        if item > jtem:
             n += 1
 
     array[index] = n

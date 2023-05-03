@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 from random import choice
 
 print('-------------------exercises1--------------------')
@@ -7,8 +8,7 @@ print('-------------------exercises1--------------------')
 # 'J'
 for _ in range(6):
     print('*', end='')
-else:
-    print()
+print()
 
 for _ in range(4):
     print('  *')
@@ -66,7 +66,7 @@ y = int(input('y: '))
 
 if x == 0 or y == 0:
     print('Can you divide a number by zero?')
-    exit(1)
+    sys.exit(1)
 
 if x%y == 0 or y%x == 0:
     print('multiple')
@@ -80,4 +80,3 @@ else:
 # else:
 #     print('not')
 #
-

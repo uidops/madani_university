@@ -1,6 +1,7 @@
 #!/usr/bin/python3.11
 
 import cmath
+import sys
 
 print("-------------------------exercises1-------------------------")
 
@@ -16,14 +17,14 @@ if not x1.imag:
 if not x2.imag:
     x2 = x2.real
 
-print('x1 = {}\nx2 = {}'.format(x1, x2))
+print(f'{x1=}\n{x2=}')
 
 print("-------------------------exercises2-------------------------")
 
 number = input('number: ')
 if len(number) != 6:
     print("The length is not 6. actually it does not matter, you can remove this code.")
-    exit(1);
+    sys.exit(1);
 
 number = int(number)
 answer = 0
@@ -46,15 +47,13 @@ while n <= number:
 
 print(answer)
 
-"""
 # Another solution:
 # Time complexity: O(1)
 
-number = int(input('number: '))
-answer = number*(number+1)*(2 * number + 1)//6
+# number = int(input('number: '))
+# answer = number*(number+1)*(2 * number + 1)//6
 
-print(answer)
-"""
+#print(answer)
 
 print("-------------------------exercises4-------------------------")
 
@@ -78,9 +77,7 @@ while number:
 
 print(answer)
 
-"""
 # Another solution:
 
-number = input('number: ')
-print(number[::-1])
-"""
+# number = input('number: ')
+# print(number[::-1])

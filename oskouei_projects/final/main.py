@@ -29,9 +29,10 @@ def __main():
 
 
 def number_to_text(number=0, text='', flag=False):
-    if not (text or number) or type(number) != int:
+    if not (text or number) or isinstance(number, int):
         return numbers[0]
-    elif number == 0:
+
+    if number == 0:
         return text
 
     if number < 0:
