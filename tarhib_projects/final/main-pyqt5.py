@@ -95,9 +95,9 @@ class MainWindow:
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName('verticalLayout')
 
-        self.feedLabel = QtWidgets.QLabel(self.listView)
-        self.feedLabel.setObjectName('feedLabel')
-        self.verticalLayout.addWidget(self.feedLabel)
+        # self.feedLabel = QtWidgets.QLabel(self.listView)
+        # self.feedLabel.setObjectName('feedLabel')
+        # self.verticalLayout.addWidget(self.feedLabel)
 
         self.feedList = QtWidgets.QListWidget(self.listView)
         self.feedList.setObjectName('feedList')
@@ -151,7 +151,7 @@ class MainWindow:
 
         self.textBrowser = QtWidgets.QTextBrowser(self.articleView)
         self.textBrowser.setObjectName('textBrowser')
-        self.verticalLayout_3.addWidget(self.textBrowser)
+        self.verticalLayout_2.addWidget(self.textBrowser)
 
         self.horizontalLayout_5.addWidget(self.articleView)
         self.MainWindow.setCentralWidget(self.centralwidget)
@@ -188,8 +188,8 @@ class MainWindow:
     def retranslate_ui(self):
         self.MainWindow.setWindowTitle(QtCore.QCoreApplication.translate(
             'MainWindow', 'RSS Feed Reader'))
-        self.feedLabel.setText(QtCore.QCoreApplication.translate(
-            'MainWindow', 'Rss Feeds'))
+        #self.feedLabel.setText(QtCore.QCoreApplication.translate(
+        #    'MainWindow', 'Rss Feeds'))
         self.feedAddBtn.setText(QtCore.QCoreApplication.translate(
             'MainWindow', 'Add'))
         self.feedDeleteBtn.setText(QtCore.QCoreApplication.translate(
