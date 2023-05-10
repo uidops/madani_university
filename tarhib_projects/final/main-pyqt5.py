@@ -14,7 +14,7 @@ class Dialog:
         self.dialog = QtWidgets.QDialog()
         self.res = False
         self.setup_ui()
-        self.dialog.exec_()
+        self.dialog.exec()
 
     def setup_ui(self):
         self.dialog.setObjectName('Dialog')
@@ -76,7 +76,7 @@ class MainWindow:
         self.read_urls()
         self.update_ui()
 
-        self.app.exec_()
+        self.app.exec()
 
     def setup_ui(self):
         self.MainWindow.setObjectName('MainWindow')
@@ -92,12 +92,19 @@ class MainWindow:
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.listView)
         self.horizontalLayout_4.setObjectName('horizontalLayout_4')
 
-        self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setObjectName('verticalLayout')
+        self.progressBar_1 = QtWidgets.QProgressBar(self.listView)
+        self.progressBar_1.setAutoFillBackground(False)
+        self.progressBar_1.setProperty('value', 0)
+        self.progressBar_1.setTextVisible(False)
+        self.progressBar_1.setOrientation(QtCore.Qt.Vertical)
+        self.progressBar_1.setTextDirection(
+                QtWidgets.QProgressBar.TopToBottom)
+        self.progressBar_1.setObjectName('progressBar_1')
 
-        # self.feedLabel = QtWidgets.QLabel(self.listView)
-        # self.feedLabel.setObjectName('feedLabel')
-        # self.verticalLayout.addWidget(self.feedLabel)
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.horizontalLayout_4.addLayout(self.verticalLayout)
+        self.horizontalLayout_4.addWidget(self.progressBar_1)
+        self.verticalLayout.setObjectName('verticalLayout')
 
         self.feedList = QtWidgets.QListWidget(self.listView)
         self.feedList.setObjectName('feedList')
@@ -116,18 +123,19 @@ class MainWindow:
         self.updateAllBtn = QtWidgets.QPushButton(self.listView)
         self.updateAllBtn.setObjectName('updateAllBtn')
         self.horizontalLayout.addWidget(self.updateAllBtn)
-        self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.feedProgressBar = QtWidgets.QProgressBar(self.listView)
-        self.feedProgressBar.setAutoFillBackground(False)
-        self.feedProgressBar.setProperty('value', 0)
-        self.feedProgressBar.setTextVisible(False)
-        self.feedProgressBar.setOrientation(QtCore.Qt.Horizontal)
-        self.feedProgressBar.setTextDirection(
+        self.progressBar_1 = QtWidgets.QProgressBar(self.listView)
+        self.progressBar_1.setAutoFillBackground(False)
+        self.progressBar_1.setProperty('value', 0)
+        self.progressBar_1.setTextVisible(False)
+        self.progressBar_1.setOrientation(QtCore.Qt.Horizontal)
+        self.progressBar_1.setTextDirection(
                 QtWidgets.QProgressBar.TopToBottom)
-        self.feedProgressBar.setObjectName('feedProgressBar')
-        self.verticalLayout.addWidget(self.feedProgressBar)
-        self.horizontalLayout_4.addLayout(self.verticalLayout)
+        self.progressBar_1.setObjectName('progressBar_1')
+        self.verticalLayout.addWidget(self.progressBar_1)
+        #  self.verticalLayout.addLayout(self.verticalLayout)
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName('verticalLayout_2')
@@ -148,6 +156,16 @@ class MainWindow:
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.articleView)
         self.verticalLayout_3.setContentsMargins(-1, 0, 9, -1)
         self.verticalLayout_3.setObjectName('verticalLayout_3')
+
+        self.progressBar_2 = QtWidgets.QProgressBar(self.listView)
+        self.progressBar_2.setAutoFillBackground(False)
+        self.progressBar_2.setProperty('value', 0)
+        self.progressBar_2.setTextVisible(False)
+        self.progressBar_2.setOrientation(QtCore.Qt.Horizontal)
+        self.progressBar_2.setTextDirection(
+                QtWidgets.QProgressBar.TopToBottom)
+        self.progressBar_2.setObjectName('progressBar_2')
+        self.verticalLayout_2.addWidget(self.progressBar_2)
 
         self.textBrowser = QtWidgets.QTextBrowser(self.articleView)
         self.textBrowser.setObjectName('textBrowser')
@@ -188,8 +206,8 @@ class MainWindow:
     def retranslate_ui(self):
         self.MainWindow.setWindowTitle(QtCore.QCoreApplication.translate(
             'MainWindow', 'RSS Feed Reader'))
-        #self.feedLabel.setText(QtCore.QCoreApplication.translate(
-        #    'MainWindow', 'Rss Feeds'))
+        #  self.feedLabel.setText(QtCore.QCoreApplication.translate(
+        #      'MainWindow', 'Rss Feeds'))
         self.feedAddBtn.setText(QtCore.QCoreApplication.translate(
             'MainWindow', 'Add'))
         self.feedDeleteBtn.setText(QtCore.QCoreApplication.translate(
@@ -342,7 +360,7 @@ class MainWindow:
         msg.setText('Error')
         msg.setInformativeText('An error has occurred.\n\n' + text)
         msg.setWindowTitle('Error')
-        msg.exec_()
+        msg.exec()
 
     def update_url(self, url: str):
         page = asyncio.get_event_loop().run_until_complete(self.get_page(url))
