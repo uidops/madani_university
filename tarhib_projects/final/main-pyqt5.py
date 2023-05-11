@@ -169,6 +169,7 @@ class MainWindow:
         self.verticalLayout_2.addWidget(self.progressBar_2)
 
         self.textBrowser = QtWidgets.QTextBrowser(self.articleView)
+        self.textBrowser.setOpenExternalLinks(True)
         self.textBrowser.setObjectName('textBrowser')
         self.verticalLayout_2.addWidget(self.textBrowser)
 
@@ -283,7 +284,8 @@ class MainWindow:
         else:
             date = tuple(self.data.items())[a][1][1][b]['pubDate']
 
-        self.textBrowser.append('Title: {0}\n\nDate: {1}\n\n{2}\n'.format(
+        self.textBrowser.append('Title: <a href="{0}">{1}</a><br><br>Date: {2}<br><br>{3}<br>'.format(
+                        tuple(self.data.items())[a][1][1][b]['link'],
                         tuple(self.data.items())[a][1][1][b]['title'],
                         date,
                         tuple(self.data.items())[a][1][1][b]['description']))
