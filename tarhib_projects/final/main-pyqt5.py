@@ -191,11 +191,17 @@ class MainWindow:
         self.actionNew_RSS_Feed = QtWidgets.QAction(self.MainWindow)
         self.actionNew_RSS_Feed.setObjectName('actionNew_RSS_Feed')
         self.menuEdit.addAction(self.actionNew_RSS_Feed)
+
+        self.actionQuit = QtWidgets.QAction(self.MainWindow)
+        self.actionQuit.setObjectName('actionQuit')
+        self.menuEdit.addAction(self.actionQuit)
+
         self.menuBar.addAction(self.menuEdit.menuAction())
 
         self.retranslate_ui()
 
         self.actionNew_RSS_Feed.triggered.connect(self.add_rss)
+        self.actionQuit.triggered.connect(self.MainWindow.close)
         self.feedAddBtn.clicked.connect(self.add_rss)
         self.feedDeleteBtn.clicked.connect(self.del_rss)
         self.feedList.itemClicked.connect(self.show_feeds)
@@ -219,7 +225,9 @@ class MainWindow:
         self.menuEdit.setTitle(QtCore.QCoreApplication.translate(
             'MainWindow', 'Edit'))
         self.actionNew_RSS_Feed.setText(
-                QtCore.QCoreApplication.translate('MainWindow', 'Add url'))
+                QtCore.QCoreApplication.translate('MainWindow', 'Add'))
+        self.actionQuit.setText(
+                QtCore.QCoreApplication.translate('MainWindow', 'Quit'))
 
     def add_rss(self):
         dia = Dialog()
