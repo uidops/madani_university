@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 import xml.etree.ElementTree
 import asyncio
 import aiohttp
+import datetime
 import os
 import pickle
 import webbrowser
@@ -257,9 +258,34 @@ class MainWindow:
     def show_feed(self):
         a, b = self.feedList.currentRow(), self.entryListWidget.currentRow()
         self.textBrowser.clear()
-        self.textBrowser.append('Title: {0}\n\nDate:{1}\n\n{2}\n'.format(
+
+        date = tuple(self.data.items())[a][1][1][b]['pubDate']
+        try:
+            try:
+                date = datetime.datetime.strptime(date, r'%a, %d %B %Y %H:%M:%S %z')
+                date = date.astimezone().strftime(r'%Y-%m-%d %H:%M:%S')
+                raise
+
+            except ValueError:
+                pass
+
+            try:
+                date = datetime.datetime.strptime(date, r'%a, %d %B %Y %H:%M:%S %Z')
+                date = date.astimezone().strftime(r'%Y-%m-%d %H:%M:%S')
+                raise
+
+            except ValueError:
+                pass
+
+        except Exception:
+            pass
+
+        else:
+            date = tuple(self.data.items())[a][1][1][b]['pubDate']
+
+        self.textBrowser.append('Title: {0}\n\nDate: {1}\n\n{2}\n'.format(
                         tuple(self.data.items())[a][1][1][b]['title'],
-                        tuple(self.data.items())[a][1][1][b]['pubDate'],
+                        date,
                         tuple(self.data.items())[a][1][1][b]['description']))
 
         self.data = list(self.data.items())
