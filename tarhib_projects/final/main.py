@@ -321,9 +321,15 @@ class MainWindow:
         # self.write_urls()
 
     def resource_handler(self, type, obj):
-        image = QtGui.QPixmap()
-        image.loadFromData(asyncio.get_event_loop().run_until_complete(self.get_page(obj.url())))
-        return image
+        if type == QtGui.QTextDocument.ImageResource:
+            pix = QtGui.QPixmap()
+            img = asyncio.get_event_loop().run_until_complete(self.get_page(obj.url()))
+            if img is not None:
+                pix.loadFromData(img)
+
+            return QtGui.QPixmap('error.png') if pix.isNull() else pix
+
+        return QtGui.QPixmap('error.png')
 
     def open_browser(self):
         webbrowser.open(self.db.get_feeds(id=self.feedList.currentRow())[self.entryListWidget.currentRow()][4])  # link
@@ -334,7 +340,7 @@ class MainWindow:
             try:
                 async with session.get(url, headers={
                     'User-Agent': 'Mozilla/5.0 (X11; OpenBSD i386)'
-                }, timeout=aiohttp.ClientTimeout(total=0)) as response:
+                }, timeout=aiohttp.ClientTimeout(total=100)) as response:
                     if response.status == 200:
                         return await response.read()
 
