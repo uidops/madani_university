@@ -6,6 +6,8 @@ import sqlcipher3 as sqlite3
 import xml.etree.ElementTree
 import asyncio
 import aiohttp
+import requests
+import base64
 import datetime
 import hashlib
 import webbrowser
@@ -171,6 +173,7 @@ class MainWindow:
         self.verticalLayout_2.addWidget(self.progressBar_2)
 
         self.textBrowser = QtWidgets.QTextBrowser(self.articleView)
+        self.textBrowser.loadResource = self.resource_handler
         self.textBrowser.setOpenExternalLinks(True)
         self.textBrowser.setObjectName('textBrowser')
         self.verticalLayout_2.addWidget(self.textBrowser)
@@ -262,7 +265,7 @@ class MainWindow:
 
     def update_ui(self):
         self.feedList.clear()
-        for x in self.db.get_urls():
+        for x in reversed(self.db.get_urls()):
             item = QtWidgets.QListWidgetItem()
             item.setText(x[2])  # title
             self.feedList.addItem(item)
@@ -271,7 +274,7 @@ class MainWindow:
         self.entryListWidget.clear()
         for feed in self.db.get_feeds(id=self.feedList.currentRow()):
             item = QtWidgets.QListWidgetItem()
-            item.setText(feed[2])  # title
+            item.setText(base64.b64decode(feed[2]).decode('utf-8'))  # title
             if feed[-1]:  # status
                 item.setBackground(
                         QtGui.QColor().fromRgb(0x2b2b2b))
@@ -282,7 +285,7 @@ class MainWindow:
         self.textBrowser.clear()
 
         feed = self.db.get_feeds(id=self.feedList.currentRow())[self.entryListWidget.currentRow()]
-        date = feed[2]  # pubdate
+        date = base64.b64decode(feed[3]).decode('utf-8')  # pubdate
         try:
             try:
                 date = datetime.datetime.strptime(date, r'%a, %d %B %Y %H:%M:%S %z')
@@ -307,15 +310,20 @@ class MainWindow:
             pass
 
         self.textBrowser.append('Title: <a href="{0}">{1}</a><br><br>Date: {2}<br><br>{3}<br>'.format(
-                        feed[4],  # url
-                        feed[2],  # title
+                        base64.b64decode(feed[4]).decode('utf-8').replace('"', r'\"'),  # url
+                        base64.b64decode(feed[2]).decode('utf-8'),  # title
                         date,
-                        feed[-2]))  # description
+                        base64.b64decode(feed[-2]).decode('utf-8')))  # description
 
         self.db.set_read(feed[1])  # hash
         self.entryListWidget.currentItem().setBackground(
                 QtGui.QColor().fromRgb(0x2b2b2b))
         # self.write_urls()
+
+    def resource_handler(self, type, obj):
+        image = QtGui.QPixmap()
+        image.loadFromData(asyncio.get_event_loop().run_until_complete(self.get_page(obj.url())))
+        return image
 
     def open_browser(self):
         webbrowser.open(self.db.get_feeds(id=self.feedList.currentRow())[self.entryListWidget.currentRow()][4])  # link
@@ -328,7 +336,7 @@ class MainWindow:
                     'User-Agent': 'Mozilla/5.0 (X11; OpenBSD i386)'
                 }, timeout=aiohttp.ClientTimeout(total=0)) as response:
                     if response.status == 200:
-                        return await response.text()
+                        return await response.read()
 
             except aiohttp.ClientError:
                 pass
@@ -351,10 +359,10 @@ class MainWindow:
         id = self.db.insert_url(url, title)
 
         for item in root.iterfind('channel/item'):
-            title = item.findtext('title')
-            pubdate = item.findtext('pubDate')
-            link = item.findtext('link')
-            description = item.findtext('description')
+            title = str(item.findtext('title'))
+            pubdate = str(item.findtext('pubDate'))
+            link = str(item.findtext('link'))
+            description = str(item.findtext('description'))
             hash = self.generate_hash(title, pubdate, link, description)
             self.db.insert_feed(id, hash, title, pubdate, link,
                                 description, self.db.get_feed_raed(hash))
@@ -380,7 +388,7 @@ class MainWindow:
             return False
 
         ret = asyncio.get_event_loop().run_until_complete(
-                self.read_rss(url, page))
+                self.read_rss(url, page.decode()))
 
         if not ret:
             self.show_error(url)
@@ -480,6 +488,11 @@ class DataBase:
                     link: str, description: str, read: bool) -> None:
         if self.exists_feed(hash):
             return
+
+        title = base64.b64encode(title.encode('utf-8')).decode()
+        pubdate = base64.b64encode(pubdate.encode('utf-8')).decode()
+        link = base64.b64encode(link.encode('utf-8')).decode()
+        description = base64.b64encode(description.encode('utf-8')).decode()
 
         self.cur.execute('INSERT INTO feeds VALUES ('
                          f"{id}, '{hash}', '{title}', "
