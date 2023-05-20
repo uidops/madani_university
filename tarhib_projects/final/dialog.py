@@ -5,11 +5,13 @@ class Dialog:
     def __init__(self):
         self.dialog = QtWidgets.QDialog()
         self.res = False
+
         self.setup_ui()
+        self.retranslate_ui()
+
         self.dialog.exec()
 
     def setup_ui(self):
-        self.dialog.setObjectName('Dialog')
         self.dialog.resize(400, 70)
 
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.dialog)
@@ -29,10 +31,9 @@ class Dialog:
 
         self.horizontalLayout.addWidget(self.buttonBox)
 
-        self.retranslate_ui()
-
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
+
         QtCore.QMetaObject.connectSlotsByName(self.dialog)
 
     def retranslate_ui(self):

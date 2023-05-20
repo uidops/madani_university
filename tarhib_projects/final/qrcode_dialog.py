@@ -1,12 +1,9 @@
-from typing import Any
 from PyQt5 import QtCore, QtWidgets, QtGui
-import PIL
 from PIL import ImageQt
 import qrcode
 import qrcode.image.styledpil
 import qrcode.image.styles.moduledrawers
 import qrcode.image.styles.colormasks
-
 
 
 class QrDialog:
@@ -15,10 +12,11 @@ class QrDialog:
         self.url = url
 
         self.setup_ui()
+        self.retranslate_ui()
+
         self.dialog.exec()
 
     def setup_ui(self):
-        self.dialog.setObjectName('QrDialog')
         self.dialog.resize(348, 452)
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.dialog)
 
@@ -41,9 +39,9 @@ class QrDialog:
         self.label_2 = QtWidgets.QLabel(self.dialog)
         self.label_2.setGeometry(QtCore.QRect(110, 330, 151, 17))
 
-        self.retranslate_ui()
         self.pushButton.clicked.connect(self.copy_clipboard)
         self.pushButton_2.clicked.connect(self.dialog.close)
+
         QtCore.QMetaObject.connectSlotsByName(self.dialog)
 
     def retranslate_ui(self):
@@ -55,6 +53,7 @@ class QrDialog:
         self.cb = QtGui.QGuiApplication.clipboard()
         self.cb.clear(mode=self.cb.Clipboard)
         self.cb.setText(self.url, mode=self.cb.Clipboard)
+
         self.label_2.setText('Copied to clipboard')
 
     def qrcode(self):

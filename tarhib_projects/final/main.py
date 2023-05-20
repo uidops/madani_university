@@ -20,7 +20,10 @@ class Main:
         self.app = QtWidgets.QApplication(['rss'])
         self.mainwin = QtWidgets.QMainWindow()
 
+        self.color = 0x050505
+
         self.setup_ui()
+        self.retranslate_ui()
         self.mainwin.show()
 
         self.show_urls()
@@ -29,8 +32,7 @@ class Main:
         self.db.con.close()
 
     def setup_ui(self):
-        self.mainwin.setObjectName('MainWindow')
-        self.mainwin.resize(899, 579)
+        self.mainwin.resize(900, 580)
 
         self.centralwidget = QtWidgets.QWidget(self.mainwin)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -80,15 +82,12 @@ class Main:
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
         self.entryListWidget = QtWidgets.QListWidget(self.listView)
-        # self.entryListWidget.trigger
         self.verticalLayout_2.addWidget(self.entryListWidget)
         self.horizontalLayout_4.addLayout(self.verticalLayout_2)
         self.horizontalLayout_5.addWidget(self.listView)
 
         self.articleView = QtWidgets.QWidget(self.centralwidget)
         self.articleView.setEnabled(True)
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.articleView)
-        self.verticalLayout_3.setContentsMargins(-1, 0, 9, -1)
 
         self.progressBar_2 = QtWidgets.QProgressBar(self.listView)
         self.progressBar_2.setAutoFillBackground(False)
@@ -115,8 +114,8 @@ class Main:
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 899, 29))
 
         self.menuEdit = QtWidgets.QMenu(self.menuBar)
-
         self.mainwin.setMenuBar(self.menuBar)
+
         self.actionNew_RSS_Feed = QtWidgets.QAction(self.mainwin)
         self.menuEdit.addAction(self.actionNew_RSS_Feed)
 
@@ -125,17 +124,18 @@ class Main:
 
         self.menuBar.addAction(self.menuEdit.menuAction())
 
-        self.retranslate_ui()
-
+        # signals
         self.actionNew_RSS_Feed.triggered.connect(self.add_rss)
         self.actionQuit.triggered.connect(self.mainwin.close)
+
         self.feedAddBtn.clicked.connect(self.add_rss)
         self.feedDeleteBtn.clicked.connect(self.del_rss)
+        self.updateAllBtn.clicked.connect(self.update_all_urls)
+
         self.feedList.itemClicked.connect(self.show_feeds)
-        self.entryListWidget.clicked.connect(self.show_feed)
+
         self.entryListWidget.mouseReleaseEvent = self.show_feed
         self.entryListWidget.itemDoubleClicked.connect(self.open_browser)
-        self.updateAllBtn.clicked.connect(self.update_all_urls)
 
         QtCore.QMetaObject.connectSlotsByName(self.mainwin)
 
@@ -174,13 +174,14 @@ class Main:
 
     def show_urls(self):
         self.feedList.clear()
-        for x in reversed(self.db.get_urls()):
+        for x in reversed(self.db.get_urls()):  # x: (id, url, title)
             item = QtWidgets.QListWidgetItem()
             item.setText(x[2])
             self.feedList.addItem(item)
 
     def show_feeds(self):
         self.entryListWidget.clear()
+        # feed: (id, hash, title, pubdate, link, description, read)
         for feed in sorted(self.db.get_feeds(id=self.feedList.currentRow()),
                            key=lambda x: x[-1]):
             item = QtWidgets.QListWidgetItem()
@@ -188,7 +189,7 @@ class Main:
             item.setText(base64.b64decode(feed[2]).decode('utf-8'))
             if feed[-1]:
                 item.setBackground(
-                        QtGui.QColor().fromRgb(0x2b2b2b))
+                        QtGui.QColor().fromRgb(self.color))
 
             self.entryListWidget.addItem(item)
 
@@ -231,7 +232,7 @@ class Main:
 
         self.db.set_read(feed[1])
         self.entryListWidget.currentItem().setBackground(
-                QtGui.QColor().fromRgb(0x2b2b2b))
+                QtGui.QColor().fromRgb(self.color))
 
     def resource_handler(self, type, obj):
         if type == QtGui.QTextDocument.ImageResource:
@@ -306,14 +307,14 @@ class Main:
     def update_url(self, url: str):
         page = asyncio.get_event_loop().run_until_complete(self.get_page(url))
         if page is None:
-            self.show_error(url)
+            self.show_error('URL: ' + url)
             return False
 
         ret = asyncio.get_event_loop().run_until_complete(
                 self.read_rss(url, page.decode()))
 
         if not ret:
-            self.show_error(url)
+            self.show_error('Response data is not XML\n\nURL: ' + url)
             return False
 
         return True
