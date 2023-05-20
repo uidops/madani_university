@@ -101,6 +101,8 @@ class DataBase:
         pubdate = base64.b64encode(pubdate.encode('utf-8')).decode()
         link = base64.b64encode(link.encode('utf-8')).decode()
         description = base64.b64encode(description.encode('utf-8')).decode()
+        read = int(read)
+
         self.cur.execute('INSERT INTO feeds VALUES ('
                          f"{id}, '{hash}', '{title}', "
                          f"'{pubdate}', '{link}', "
@@ -110,7 +112,7 @@ class DataBase:
 
     def set_read(self, hash: str):
         self.cur.execute('UPDATE feeds SET '
-                         f'read=True WHERE '
+                         f'read=1 WHERE '
                          f"hash='{hash}';")
 
         self.con.commit()

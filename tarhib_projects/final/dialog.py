@@ -15,12 +15,11 @@ class Dialog:
         self.dialog.resize(400, 70)
 
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.dialog)
-
         self.verticalLayout = QtWidgets.QVBoxLayout()
 
         self.linkEdit = QtWidgets.QLineEdit(self.dialog)
-
         self.verticalLayout.addWidget(self.linkEdit)
+
         self.horizontalLayout.addLayout(self.verticalLayout)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(self.dialog)
@@ -34,11 +33,9 @@ class Dialog:
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        QtCore.QMetaObject.connectSlotsByName(self.dialog)
-
     def retranslate_ui(self):
         self.dialog.setWindowTitle('New RSS Feed')
-        self.linkEdit.setPlaceholderText('http://example.com/feed.rss')
+        self.linkEdit.setPlaceholderText('http://example.com/feeds.xml')
 
     def accept(self):
         self.res = True

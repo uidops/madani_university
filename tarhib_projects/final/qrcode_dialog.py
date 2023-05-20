@@ -18,11 +18,11 @@ class QrDialog:
 
     def setup_ui(self):
         self.dialog.resize(348, 452)
-        self.horizontalLayoutWidget = QtWidgets.QWidget(self.dialog)
 
+        self.horizontalLayoutWidget = QtWidgets.QWidget(self.dialog)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(40, 360, 279, 80))
+
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
 
         self.pushButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.horizontalLayout.addWidget(self.pushButton)
@@ -42,8 +42,6 @@ class QrDialog:
         self.pushButton.clicked.connect(self.copy_clipboard)
         self.pushButton_2.clicked.connect(self.dialog.close)
 
-        QtCore.QMetaObject.connectSlotsByName(self.dialog)
-
     def retranslate_ui(self):
         self.dialog.setWindowTitle('Feed')
         self.pushButton.setText('Copy link to clipboard')
@@ -53,7 +51,6 @@ class QrDialog:
         self.cb = QtGui.QGuiApplication.clipboard()
         self.cb.clear(mode=self.cb.Clipboard)
         self.cb.setText(self.url, mode=self.cb.Clipboard)
-
         self.label_2.setText('Copied to clipboard')
 
     def qrcode(self):
@@ -65,8 +62,8 @@ class QrDialog:
 
         self.qr.add_data(self.url)
         return self.qr.make_image(image_factory=qrcode.image.styledpil.StyledPilImage,
-                           module_drawer=qrcode.image.styles.moduledrawers.VerticalBarsDrawer(),
-                           embeded_image_path='rss.png',
-                           color_mask=qrcode.image.styles.colormasks.SolidFillColorMask(
-                               front_color=(0xff, 0xff, 0xff),
-                               back_color=(0xf7, 0x84, 0x22))).get_image().resize((200, 200))
+                                  module_drawer=qrcode.image.styles.moduledrawers.VerticalBarsDrawer(),
+                                  embeded_image_path='rss.png',
+                                  color_mask=qrcode.image.styles.colormasks.SolidFillColorMask(
+                                      front_color=(0xff, 0xff, 0xff),
+                                      back_color=(0xf7, 0x84, 0x22))).get_image().resize((200, 200))
