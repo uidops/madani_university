@@ -212,7 +212,7 @@ class Main:
     def resource_handler(self, typ, obj):
         if typ == QtGui.QTextDocument.ImageResource:
             pix = QtGui.QPixmap()
-            img = asyncio.get_event_loop().run_until_complete(
+            img = asyncio.new_event_loop().run_until_complete(
                     self.get_page(obj.url()))
             if img is not None:
                 pix.loadFromData(img)
@@ -279,13 +279,13 @@ class Main:
             self.update_url(item[1])
 
     def update_url(self, url: str):
-        page = asyncio.get_event_loop().run_until_complete(
+        page = asyncio.new_event_loop().run_until_complete(
                 self.get_page(url))
         if page is None:
             self.show_error('URL: ' + url)
             return False
 
-        ret = asyncio.get_event_loop().run_until_complete(
+        ret = asyncio.new_event_loop().run_until_complete(
                 self.parse_rss(url, page.decode()))
 
         if not ret:
