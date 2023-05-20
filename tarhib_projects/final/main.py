@@ -70,7 +70,6 @@ class Main:
         self.progressBar_1.setTextDirection(
                 QtWidgets.QProgressBar.TopToBottom)
         self.verticalLayout.addWidget(self.progressBar_1)
-        #  self.verticalLayout.addLayout(self.verticalLayout)
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
@@ -181,7 +180,7 @@ class Main:
         self.feedList.clear()
         for x in reversed(self.db.get_urls()):
             item = QtWidgets.QListWidgetItem()
-            item.setText(x[2])  # title
+            item.setText(x[2])
             self.feedList.addItem(item)
 
     def show_feeds(self):
@@ -190,8 +189,8 @@ class Main:
                            key=lambda x: x[-1]):
             item = QtWidgets.QListWidgetItem()
             item.setData(1, feed[1])
-            item.setText(base64.b64decode(feed[2]).decode('utf-8'))  # title
-            if feed[-1]:  # status
+            item.setText(base64.b64decode(feed[2]).decode('utf-8'))
+            if feed[-1]:
                 item.setBackground(
                         QtGui.QColor().fromRgb(0x2b2b2b))
 
@@ -200,7 +199,7 @@ class Main:
     def show_feed(self):
         self.textBrowser.clear()
         feed = self.db.get_feed(self.entryListWidget.currentItem().data(1))
-        date = base64.b64decode(feed[3]).decode('utf-8')  # pubdate
+        date = base64.b64decode(feed[3]).decode('utf-8')
         try:
             try:
                 date = datetime.datetime.strptime(date, r'%a, %d %B %Y %H:%M:%S %z')
@@ -225,12 +224,12 @@ class Main:
             pass
 
         self.textBrowser.append('Title: <a href="{0}">{1}</a><br><br>Date: {2}<br><br>{3}<br>'.format(
-                        base64.b64decode(feed[4]).decode('utf-8').replace('"', r'\"'),  # url
-                        base64.b64decode(feed[2]).decode('utf-8'),  # title
+                        base64.b64decode(feed[4]).decode('utf-8').replace('"', r'\"'),
+                        base64.b64decode(feed[2]).decode('utf-8'),
                         date,
-                        base64.b64decode(feed[-2]).decode('utf-8')))  # description
+                        base64.b64decode(feed[-2]).decode('utf-8')))
 
-        self.db.set_read(feed[1])  # hash
+        self.db.set_read(feed[1])
         self.entryListWidget.currentItem().setBackground(
                 QtGui.QColor().fromRgb(0x2b2b2b))
 
@@ -255,7 +254,7 @@ class Main:
             try:
                 async with session.get(url, headers={
                     'User-Agent': 'Mozilla/5.0 (X11; OpenBSD i386)'
-                }, timeout=aiohttp.ClientTimeout(total=100)) as response:
+                }, timeout=aiohttp.ClientTimeout(total=0)) as response:
                     if response.status == 200:
                         return await response.read()
 

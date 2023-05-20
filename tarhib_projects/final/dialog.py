@@ -9,6 +9,7 @@ class Dialog:
         self.dialog.exec()
 
     def setup_ui(self):
+        self.dialog.setObjectName('Dialog')
         self.dialog.resize(400, 70)
 
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.dialog)
