@@ -11,6 +11,7 @@ import webbrowser
 
 from database import DataBase
 from dialog import Dialog
+from qrcode_dialog import QrDialog
 
 
 class Main:
@@ -79,6 +80,7 @@ class Main:
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
         self.entryListWidget = QtWidgets.QListWidget(self.listView)
+        # self.entryListWidget.trigger
         self.verticalLayout_2.addWidget(self.entryListWidget)
         self.horizontalLayout_4.addLayout(self.verticalLayout_2)
         self.horizontalLayout_5.addWidget(self.listView)
@@ -130,27 +132,21 @@ class Main:
         self.feedAddBtn.clicked.connect(self.add_rss)
         self.feedDeleteBtn.clicked.connect(self.del_rss)
         self.feedList.itemClicked.connect(self.show_feeds)
-        self.entryListWidget.itemClicked.connect(self.show_feed)
-        self.entryListWidget.doubleClicked.connect(self.open_browser)
+        self.entryListWidget.clicked.connect(self.show_feed)
+        self.entryListWidget.mouseReleaseEvent = self.show_feed
+        self.entryListWidget.itemDoubleClicked.connect(self.open_browser)
         self.updateAllBtn.clicked.connect(self.update_all_urls)
 
         QtCore.QMetaObject.connectSlotsByName(self.mainwin)
 
     def retranslate_ui(self):
-        self.mainwin.setWindowTitle(QtCore.QCoreApplication.translate(
-            'MainWindow', 'RSS Feed Reader'))
-        self.feedAddBtn.setText(QtCore.QCoreApplication.translate(
-            'MainWindow', 'Add'))
-        self.feedDeleteBtn.setText(QtCore.QCoreApplication.translate(
-            'MainWindow', 'Delete'))
-        self.updateAllBtn.setText(QtCore.QCoreApplication.translate(
-            'MainWindow', 'Update All'))
-        self.menuEdit.setTitle(QtCore.QCoreApplication.translate(
-            'MainWindow', 'Edit'))
-        self.actionNew_RSS_Feed.setText(
-                QtCore.QCoreApplication.translate('MainWindow', 'Add'))
-        self.actionQuit.setText(
-                QtCore.QCoreApplication.translate('MainWindow', 'Quit'))
+        self.mainwin.setWindowTitle('RSS Feed Reader')
+        self.feedAddBtn.setText('Add')
+        self.feedDeleteBtn.setText('Delete')
+        self.updateAllBtn.setText('Update All')
+        self.menuEdit.setTitle('Edit')
+        self.actionNew_RSS_Feed.setText('Add')
+        self.actionQuit.setText('Quit')
 
     def generate_hash(self, *args):
         return hashlib.md5(''.join(args).encode('utf-8')).hexdigest()
@@ -196,9 +192,12 @@ class Main:
 
             self.entryListWidget.addItem(item)
 
-    def show_feed(self):
-        self.textBrowser.clear()
+    def show_feed(self, event):
         feed = self.db.get_feed(self.entryListWidget.currentItem().data(1))
+        if event.button() == QtCore.Qt.RightButton:
+            QrDialog(base64.b64decode(feed[4]).decode('utf-8'))
+            return
+
         date = base64.b64decode(feed[3]).decode('utf-8')
         try:
             try:
@@ -223,6 +222,7 @@ class Main:
         else:
             pass
 
+        self.textBrowser.clear()
         self.textBrowser.append('Title: <a href="{0}">{1}</a><br><br>Date: {2}<br><br>{3}<br>'.format(
                         base64.b64decode(feed[4]).decode('utf-8').replace('"', r'\"'),
                         base64.b64decode(feed[2]).decode('utf-8'),

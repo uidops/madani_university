@@ -36,10 +36,8 @@ class Dialog:
         QtCore.QMetaObject.connectSlotsByName(self.dialog)
 
     def retranslate_ui(self):
-        self.dialog.setWindowTitle(QtCore.QCoreApplication.translate(
-            'Dialog', 'New RSS Feed'))
-        self.linkEdit.setPlaceholderText(QtCore.QCoreApplication.translate(
-            'Dialog', 'http://example.com/feed.rss'))
+        self.dialog.setWindowTitle('New RSS Feed')
+        self.linkEdit.setPlaceholderText('http://example.com/feed.rss')
 
     def accept(self):
         self.res = True
