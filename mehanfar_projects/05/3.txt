@@ -1,0 +1,187 @@
+5-3:
+
+infix: (a + b) * (c / d - e) + f * g * h
+
+prefix without stack:
+    (a + b) * (c / d - e) + f * g * h
+    (((a + b) * ((c / d) - e)) + ((f * g) * h))
+    ((+ a  b) * ((c / d) - e)) + ((f * g) * h))
+    ((+ a  b) * (/ c  d) - e)) + ((f * g) * h))
+    ((+ a  b) * - / c  d) e)) + ((f * g) * h))
+    (* + a  b) - / c  d) e)) + ((f * g) * h))
+    (* + a  b) - / c  d) e)) + (* f  g) * h))
+    (* + a  b) - / c  d) e)) + * * f  g) h))
+    + * + a  b) - / c  d) e)) * * f  g) h))
+    + * + a  b - / c d e * * f g h
+
+postfix without stack:
+    (a + b) * (c / d - e) + f * g * h
+    (((a + b) * ((c / d) - e)) + ((f * g) * h))
+    (((a b + * ((c / d) - e)) + ((f * g) * h))
+    (((a b + * ((c d / - e)) + ((f * g) * h))
+    (((a b + * ((c d / e -) + ((f * g) * h))
+    (((a b +  ((c d / e - * + ((f * g) * h))
+    (((a b +  ((c d / e - * + ((f g * * h))
+    (((a b +  ((c d / e - * + ((f g * h *)
+    (((a b +  ((c d / e - * ((f g * h * +
+    a b + c d / e - * f g * h * +
+
+
+postfix using stack:
+    stack: (
+    input: (a + b) * (c / d - e) + f * g * h)
+    output:
+
+    stack: ( (
+    input: a + b) * (c / d - e) + f * g * h)
+    output:
+
+    stack: ( (
+    input: + b) * (c / d - e) + f * g * h)
+    output: a
+
+    stack: ( ( +
+    input: b) * (c / d - e) + f * g * h)
+    output: a
+
+    stack: ( ( +
+    input: ) * (c / d - e) + f * g * h)
+    output: a b
+
+    stack: (
+    input: * (c / d - e) + f * g * h)
+    output: a b +
+
+    stack: ( *
+    input: (c / d - e) + f * g * h)
+    output: a b +
+
+    stack: ( * (
+    input: c / d - e) + f * g * h)
+    output: a b +
+
+    stack: ( * (
+    input: / d - e) + f * g * h)
+    output: a b + c
+
+    stack: ( * ( /
+    input: d - e) + f * g * h)
+    output: a b + c
+
+    stack: ( * ( /
+    input: - e) + f * g * h)
+    output: a b + c d
+
+    stack: ( * ( -
+    input: e) + f * g * h)
+    output: a b + c d /
+
+    stack: ( * ( -
+    input: ) + f * g * h)
+    output: a b + c d / e
+
+    stack: ( *
+    input: + f * g * h)
+    output: a b + c d / e -
+
+    stack: ( +
+    input: f * g * h)
+    output: a b + c d / e - *
+
+    stack: ( +
+    input: * g * h)
+    output: a b + c d / e - * f
+
+    stack: ( + *
+    input: g * h)
+    output: a b + c d / e - * f
+
+    stack: ( + *
+    input: * h)
+    output: a b + c d / e - * f g
+
+    stack: ( + *
+    input: h)
+    output: a b + c d / e - * f g *
+
+    stack: ( + *
+    input: )
+    output: a b + c d / e - * f g * h
+
+    stack: 
+    input:
+    output: a b + c d / e - * f g * h * +
+
+
+
+6-3:
+    postfix: a b * c / d e f * h + * +
+
+    stack:
+    input: a b * c / d e f * h + * +
+
+    stack: a b
+    input: * c / d e f * h + * +
+
+    stack: (a*b) c
+    input: / d e f * h + * +
+
+    stack: ((a*b)/c)
+    input: d e f * h + * +
+
+    stack: ((a*b)/c) d e f
+    input: * h + * +
+
+    stack: ((a*b)/c) d (e*f)
+    input: h + * +
+
+    stack: ((a*b)/c) d (e*f) h
+    input: + * +
+
+    stack: ((a*b)/c) d ((e*f)+h)
+    input: * +
+
+    stack: ((a*b)/c) (d*((e*f)+h))
+    input: +
+
+    stack: (((a*b)/c)+(d*((e*f)+h)))
+    input:
+
+    output: a*b/c+d*(e*f+h)
+
+
+7-3:
+    prefix: + / a + b * * c d f * h k
+
+    stack:
+    input: + / a + b * * c d f * h k
+
+    # push to stack until we get two operand
+    stack: + / a + b * * c d
+    input: f * h k
+
+    stack: + / a + b * (c*d)
+    input: f * h k
+
+    stack: + / a + b * (c*d) f
+    input: * h k
+
+    stack: + / a + b ((c*d)*f)
+    input: * h k
+
+    stack: + / a (b+((c*d)*f))
+    input: * h k
+
+    stack: + (a/(b+((c*d)*f)))
+    input: * h k
+
+    stack: + (a/(b+((c*d)*f))) * h k
+    input:
+
+    stack: + (a/(b+((c*d)*f))) (h*k)
+    input:
+
+    stack: ((a/(b+((c*d)*f)))+(h*k))
+    input:
+
+    output: a/(b+c*d*f)+h*k
