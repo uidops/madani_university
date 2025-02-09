@@ -9,13 +9,13 @@ from typing import List, Tuple
 import numpy as np
 
 settings = {
-    'characters': ['X', 'O', ' '],  # first character is human
-    'size': 4,  # size of the board
-    'min_simulations': 10,  # min simulations when we are sure
-    'max_simulations': 30,  # max simulations when depth reached
-    'max_depth': 16,  # max depth for end of game
-    'top_moves': 3,  # limit the number of nodes in each depth
-    'max_workers': os.cpu_count(),  # max workers for parallel game simulations
+    "characters": ["X", "O", " "],  # first character is human
+    "size": 4,  # size of the board
+    "min_simulations": 10,  # min simulations when we are sure
+    "max_simulations": 30,  # max simulations when depth reached
+    "max_depth": 16,  # max depth for end of game
+    "top_moves": 3,  # limit the number of nodes in each depth
+    "max_workers": os.cpu_count(),  # max workers for parallel game simulations
 }
 
 
@@ -26,25 +26,25 @@ def print_board(board: np.ndarray) -> None:
     # and we have n cells per row
     line_size = n * 4 + 1
 
-    os.system('clear' if os.name == 'posix' else 'cls')
+    os.system("clear" if os.name == "posix" else "cls")
 
     # print the column numbers and top line
-    print('    ' + ''.join(f'{i}   ' for i in range(1, n + 1)))
-    print('  ' + '─' * line_size)
+    print("    " + "".join(f"{i}   " for i in range(1, n + 1)))
+    print("  " + "─" * line_size)
 
     for row in range(n):
         # format each row in form "a-z | A | B | C | D | .... |"
         # and print the line after each row
-        srow = '｜'.join([f' {board[row, col]}' for col in range(n)])
-        print(f'{string.ascii_lowercase[row]} ｜{srow}｜')
-        print('  ' + '─' * line_size)
+        srow = "｜".join([f" {board[row, col]}" for col in range(n)])
+        print(f"{string.ascii_lowercase[row]} ｜{srow}｜")
+        print("  " + "─" * line_size)
 
 
 def count_score(line: np.ndarray) -> List[int]:
     scores = [0, 0]  # human, AI
     counts = [0, 0]  # human, AI
     for char in line:
-        if char == settings['characters'][0]:  # when reached human
+        if char == settings["characters"][0]:  # when reached human
             # calculate the score of AI if there is any then count the human
             # max is because if counts is below 3,
             # it'll be negative and that means the score is zero
@@ -53,7 +53,7 @@ def count_score(line: np.ndarray) -> List[int]:
 
             counts[0] += 1
 
-        elif char == settings['characters'][1]:  # when reached AI
+        elif char == settings["characters"][1]:  # when reached AI
             # calculate the score of human if there is any then count the AI
             scores[0] += max(0, 2 * counts[0] - 5)
             counts[0] = 0
@@ -85,8 +85,7 @@ def calculate_scores(board: np.ndarray) -> List[int]:
 
         # zip makes a tuple of elements of arrays with same index
         # and makes it easy to summation. a functional method.
-        total_score = list(map(sum,
-                               zip(total_score, row_score, col_score)))
+        total_score = list(map(sum, zip(total_score, row_score, col_score)))
 
     # flip the board horizontally.
     # it changes the order of cloumns from first-to-last to last-to-first
@@ -97,15 +96,16 @@ def calculate_scores(board: np.ndarray) -> List[int]:
         main_diag_score = count_score(board.diagonal(k))
         counter_diag_score = count_score(board_flipped.diagonal(k))
 
-        total_score = list(map(sum,
-                               zip(total_score, main_diag_score, counter_diag_score)))
+        total_score = list(
+            map(sum, zip(total_score, main_diag_score, counter_diag_score))
+        )
 
     return total_score
 
 
 def who_won(board: np.ndarray) -> Tuple[int, List[int]]:
     # the game is not over yet if there is an empty cell
-    if np.any(board == settings['characters'][2]):
+    if np.any(board == settings["characters"][2]):
         return -1, [0, 0]
 
     score = calculate_scores(board)
@@ -135,13 +135,13 @@ def simulate_game(board: np.ndarray, player: int) -> int:
     # first element is row indices array
     # second element is column indices array
     # by zip, we convert indices to a (row, column) array
-    moves = list(zip(*np.where(board == settings['characters'][2])))
+    moves = list(zip(*np.where(board == settings["characters"][2])))
     # play the game randomly until the game is over
     while winner == -1 or any(moves):
         # choose a move randomly from allowed moves
         # and place the char of palyer in board
         move = random.choice(moves)
-        board[move] = settings['characters'][current_player]
+        board[move] = settings["characters"][current_player]
         moves.remove(move)
 
         # toggle the current player (switches between 0 and 1)
@@ -155,40 +155,52 @@ def simulate_game(board: np.ndarray, player: int) -> int:
     return score[player ^ 1] - score[player]
 
 
-def monte_carlo_evaluation(board: np.ndarray, player: int, simulations: int) -> float:
+def monte_carlo_evaluation(
+    board: np.ndarray, player: int, simulations: int
+) -> float:
     # run simulate_game 'simulations' times parallely
     # and return the avarage score
     results = []
-    with ThreadPoolExecutor(max_workers=settings['max_workers']) as executor:
-        tasks = [executor.submit(simulate_game, board, player)
-                 for _ in range(simulations)]
+    with ThreadPoolExecutor(max_workers=settings["max_workers"]) as executor:
+        tasks = [
+            executor.submit(simulate_game, board, player)
+            for _ in range(simulations)
+        ]
         results = [t.result() for t in tasks]
 
     return sum(results) / simulations
 
 
-def order_moves(board: np.ndarray, moves: List[Tuple[int, int]], player: int) -> List[Tuple[int, int]]:
+def order_moves(
+    board: np.ndarray, moves: List[Tuple[int, int]], player: int
+) -> List[Tuple[int, int]]:
     # sort moves based on current score of board
     opp = player ^ 1
 
     def heuristic_key(move):
-        board[move] = settings['characters'][player]
+        board[move] = settings["characters"][player]
         scores = calculate_scores(board)
-        board[move] = settings['characters'][2]
+        board[move] = settings["characters"][2]
         return scores[player] - scores[opp]
 
     moves.sort(key=heuristic_key, reverse=True)
-    return moves[:settings['top_moves']]
+    return moves[: settings["top_moves"]]
 
 
-def max_value(board: np.ndarray, alpha: float, beta: float, depth: int) -> Tuple[float, Tuple[int]]:
+def max_value(
+    board: np.ndarray, alpha: float, beta: float, depth: int
+) -> Tuple[float, Tuple[int]]:
     # empty cells are allowed moves
-    moves = list(zip(*np.where(board == settings['characters'][2])))
+    moves = list(zip(*np.where(board == settings["characters"][2])))
 
     # call monte-carlo if depth is reached or game is over
     if depth <= 0 or not any(moves):
         # use max_simulations when depth is limited else use the min_simulations
-        simulations = settings['max_simulations'] if depth == 0 else settings['min_simulations']
+        simulations = (
+            settings["max_simulations"]
+            if depth == 0
+            else settings["min_simulations"]
+        )
         return monte_carlo_evaluation(board, 1, simulations), (-1, -1)
 
     best_score = -math.inf
@@ -198,11 +210,11 @@ def max_value(board: np.ndarray, alpha: float, beta: float, depth: int) -> Tuple
     # this makes alpha-beta pruning works better
     moves = order_moves(board, moves, 1)
     for move in moves:
-        board[move] = settings['characters'][1]
+        board[move] = settings["characters"][1]
         score, _ = min_value(board, alpha, beta, depth - 1)
 
         # reset board to previous state
-        board[move] = settings['characters'][2]
+        board[move] = settings["characters"][2]
 
         # maximizing score
         if score > best_score:
@@ -218,14 +230,20 @@ def max_value(board: np.ndarray, alpha: float, beta: float, depth: int) -> Tuple
     return best_score, best_move
 
 
-def min_value(board: np.ndarray, alpha: float, beta: float, depth: int) -> Tuple[float, Tuple[int]]:
+def min_value(
+    board: np.ndarray, alpha: float, beta: float, depth: int
+) -> Tuple[float, Tuple[int]]:
     # empty cells are allowed moves
-    moves = list(zip(*np.where(board == settings['characters'][2])))
+    moves = list(zip(*np.where(board == settings["characters"][2])))
 
     # call monte-carlo if depth is reached or game is over
     if depth <= 0 or not any(moves):
         # use max_simulations when depth is limited else use the min_simulations
-        simulations = settings['max_simulations'] if depth == 0 else settings['min_simulations']
+        simulations = (
+            settings["max_simulations"]
+            if depth == 0
+            else settings["min_simulations"]
+        )
         return monte_carlo_evaluation(board, 0, simulations), (-1, -1)
 
     best_score = math.inf
@@ -235,11 +253,11 @@ def min_value(board: np.ndarray, alpha: float, beta: float, depth: int) -> Tuple
     # this makes alpha-beta pruning works better
     moves = order_moves(board, moves, 0)
     for move in moves:
-        board[move] = settings['characters'][0]
+        board[move] = settings["characters"][0]
         score, _ = max_value(board, alpha, beta, depth - 1)
 
         # reset board to previous state
-        board[move] = settings['characters'][2]
+        board[move] = settings["characters"][2]
 
         # minimzing score
         if score < best_score:
@@ -257,7 +275,7 @@ def min_value(board: np.ndarray, alpha: float, beta: float, depth: int) -> Tuple
 
 def main():
     # shape of the board from settings
-    n = settings['size']
+    n = settings["size"]
 
     # board = np.array([
     #     ['X', 'O', 'X'],
@@ -268,7 +286,7 @@ def main():
     # print(max_value(board, -math.inf, math.inf, 100))
     # exit()
     # create a full n*n board with empty character
-    board = np.full((n, n), settings['characters'][2])
+    board = np.full((n, n), settings["characters"][2])
 
     # we choose first player randomly
     # 0 -> human   ,   1 -> AI
@@ -289,16 +307,23 @@ def main():
             while True:
                 try:
                     choice = input(
-                        "Enter your move as 'ij' (example: a1): ").strip()
+                        "Enter your move as 'ij' (example: a1): "
+                    ).strip()
 
                     # row is from lowercase characters
                     # col is from 1 to n, -1 because the index starts from 0
-                    i, j = string.ascii_lowercase.index(choice[0]), \
-                        int(choice[1:]) - 1
+                    i, j = (
+                        string.ascii_lowercase.index(choice[0]),
+                        int(choice[1:]) - 1,
+                    )
 
                     # if i and j are in valid range and the cell is empty, then put the character of human into the cell
-                    if (0 <= i < n) and (0 <= j < n) and board[i, j] == settings['characters'][2]:
-                        board[i, j] = settings['characters'][0]
+                    if (
+                        (0 <= i < n)
+                        and (0 <= j < n)
+                        and board[i, j] == settings["characters"][2]
+                    ):
+                        board[i, j] = settings["characters"][0]
                         break
 
                     else:
@@ -315,8 +340,11 @@ def main():
             now = time.time()
 
             # use 9 as depth if number of remaining empty cells are below 9 (like it's 3x3)
-            depth = settings['max_depth'] if (
-                board == settings['characters'][2]).sum() <= 9 else 9
+            depth = (
+                settings["max_depth"]
+                if (board == settings["characters"][2]).sum() <= 9
+                else 9
+            )
 
             # call max_value for a move that maximize the score of AI
             _, move = max_value(board, -math.inf, math.inf, depth)
@@ -328,7 +356,7 @@ def main():
             time.sleep(2)
 
             # put the character of AI into the cell
-            board[move] = settings['characters'][1]
+            board[move] = settings["characters"][1]
 
         # toggle the current player (switches between 0 and 1)
         # 0^1 -> 1  ,  1^1 -> 0
@@ -340,6 +368,10 @@ def main():
 
     # print the board when game is over and announce the winner
     print_board(board)
+
+    human, ai = calculate_scores(board)
+    print(f"human = {human}   ai = {ai}")
+
     if winner == 0:
         print("You won!")
 

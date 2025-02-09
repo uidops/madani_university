@@ -340,6 +340,8 @@ def main():
 
     # print the board when game is over and announce the winner
     print_board(board)
+    human, ai = calculate_scores(board)
+    print(f'human = {human}   ai = {ai}')
     if winner == 0:
         print("You won!")
 

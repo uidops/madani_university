@@ -9,7 +9,11 @@ n, m = int(sys.argv[1]), int(sys.argv[2])
 print('{},{}'.format(n, m))
 
 matrix = np.random.choice(list(range(1, 10)), size=(n, m))
-mask = np.random.choice([True, False], size=(n, m))
+mask = np.ones((m, m), dtype=bool)
+mask_flat = mask.flatten()
+mask_flat[np.random.choice(n * m, size=350, replace=True)] = False
+mask = mask_flat.reshape(n, m)
+
 v = matrix * mask
 
 print(*np.sum(v, axis=1).tolist(), sep=',')
