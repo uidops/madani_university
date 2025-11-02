@@ -54,7 +54,7 @@ img {
     margin-top: 0;
     margin-right: 0;
     margin-bottom: 6px;
-    margin-right: 0;
+    margin-left: 0;
 }
 
 #hero .subtitle {
@@ -130,9 +130,9 @@ img {
 
 .section-title {
     margin-top: 0;
-    margin-left: 0;
-    margin-bottom: 8px;
     margin-right: 0;
+    margin-bottom: 8px;
+    margin-left: 0;
 
     font-size: 25px;
     font-weight: 700;
@@ -181,7 +181,7 @@ ul.list {
 
     margin-top: 0;
     margin-right: 0;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     margin-left: 18px;
 }
 
@@ -189,7 +189,7 @@ article.job h4.role {
     margin-top: 0;
     margin-right: 0;
     margin-bottom: 0;
-    margin-right: 18px;
+    margin-left: 18px;
 
     line-height: 1.2;
 }
@@ -211,7 +211,7 @@ article.job ul.list {
 
 article.job ul.list li {
     margin-top: 2px;
-    margin-right: 0px;
+    margin-right: 0;
     margin-bottom: 2px;
     margin-left: 0;
 
@@ -343,4 +343,13 @@ footer.footer {
 a[href^="https://"]
 {
     text-decoration: none;
+}
+
+.card.side.left > img {
+    display: block;
+    width: 100%;
+    max-width: 140px;
+    border-radius: 50%;
+    background: #ecfbf5;
+    margin-bottom: 10px;
 }
