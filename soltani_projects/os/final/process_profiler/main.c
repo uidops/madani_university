@@ -798,7 +798,7 @@ static const struct syscall_info *get_syscall_info(const char *name) {
     return NULL;
 }
 
-static void format_syscall_args(const char *syscall_name, __u64 args[6], char *buffer, size_t buffer_size) {
+static void format_syscall_args(const char *syscall_name, const __u64 args[6], char *buffer, size_t buffer_size) {
     const struct syscall_info *info = get_syscall_info(syscall_name);
 
     if (!info || !syscall_verbose) {

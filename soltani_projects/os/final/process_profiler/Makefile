@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 CLANG = clang
 BPFTOOL = bpftool
 
@@ -36,7 +36,7 @@ clean:
 
 install-deps:
 	sudo apt update
-	sudo apt install -y libbpf-dev clang llvm bpftool linux-headers-$(shell uname -r)
+	sudo apt install -y libbpf-dev clang llvm linux-tools-common linux-headers-$(shell uname -r)
 
 help:
 	@echo "Available targets:"

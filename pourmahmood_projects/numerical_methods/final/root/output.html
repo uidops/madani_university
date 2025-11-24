@@ -1,0 +1,3530 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Numerical Methods Report</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 10px; 
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+            font-size: 8pt;
+            line-height: 1.1;
+        }
+        h1 { 
+            color: #2c3e50; 
+            font-size: 12pt;
+            margin: 10px 0;
+        }
+        h2 { 
+            color: #34495e; 
+            font-size: 10pt;
+            margin: 8px 0;
+        }
+        h3 { 
+            color: #2980b9; 
+            font-size: 9pt;
+            margin: 6px 0;
+        }
+        h4 { 
+            font-size: 8pt;
+            margin: 4px 0;
+        }
+        h5 { 
+            font-size: 7pt;
+            margin: 3px 0;
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin: 10px 0;
+            font-size: 5pt;
+            table-layout: fixed;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 2px; 
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 80px;
+        }
+        th { 
+            background-color: #f2f2f2; 
+            font-weight: bold;
+            font-size: 5pt;
+        }
+        code { 
+            background-color: #f8f8f8; 
+            padding: 1px 2px; 
+            border-radius: 2px;
+            font-family: 'Courier New', monospace;
+            font-size: 5pt;
+            word-wrap: break-word;
+        }
+        pre { 
+            background-color: #f8f8f8; 
+            padding: 5px; 
+            border-radius: 3px; 
+            overflow-x: auto;
+            font-size: 4pt;
+            line-height: 1.0;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        img { 
+            max-width: 90%; 
+            height: auto; 
+            display: block; 
+            margin: 5px auto;
+            page-break-inside: avoid;
+        }
+        p {
+            font-size: 7pt;
+            margin: 3px 0;
+            line-height: 1.1;
+        }
+        ul, ol {
+            font-size: 6pt;
+            margin: 5px 0;
+            padding-left: 15px;
+        }
+        li {
+            margin: 1px 0;
+        }
+        .number {
+            font-family: 'Courier New', monospace;
+            font-size: 4pt;
+        }
+</style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <h1>Numerical Methods for Root Finding: Comprehensive Analysis</h1>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#test-functions">Test Functions</a></li>
+<li><a href="#theoretical-background">Theoretical Background</a></li>
+<li><a href="#method-descriptions-with-examples">Method Descriptions with Examples</a></li>
+<li><a href="#performance-analysis">Performance Analysis</a></li>
+<li><a href="#convergence-comparison">Convergence Comparison</a></li>
+<li><a href="#final-comparison-and-recommendations">Final Comparison and Recommendations</a></li>
+</ol>
+<h2>Introduction</h2>
+<p>This report presents a comprehensive analysis of various numerical methods for finding roots of nonlinear equations. We compare different methods in terms of convergence speed, accuracy, stability, and computational efficiency. The methods analyzed include:</p>
+<ul>
+<li>Bisection Method</li>
+<li>Newton's Method</li>
+<li>Secant Method</li>
+<li>Fixed-point Method</li>
+<li>Aitken's Acceleration</li>
+<li>Real-time Aitken's Acceleration</li>
+</ul>
+<h2>Test Functions</h2>
+<p>We tested the methods on the following function:</p>
+<h3>Primary Test Function: f(x) = 3<em>sin(x) + 4</em>cos(x)</h3>
+<ul>
+<li><strong>Mathematical form</strong>: f(x) = 3<em>sin(x) + 4</em>cos(x)</li>
+<li><strong>Derivative</strong>: f'(x) = -4<em>sin(x) + 3</em>cos(x)</li>
+<li><strong>Interval</strong>: [1.500000000000000, 3.000000000000000]</li>
+<li><strong>Initial guess</strong>: 2.000000000000000</li>
+<li><strong>True root</strong>: 2.214297435588181</li>
+<li><strong>Tolerance</strong>: ε = 0.000001000000000</li>
+</ul>
+<p>This function represents exponential growth problems and has applications in population dynamics, compound interest, and decay processes.</p>
+<h2>Theoretical Background</h2>
+<h3>Convergence Rates</h3>
+<ul>
+<li>
+<p><strong>Linear Convergence</strong>: If |eₙ₊₁| ≤ c·|eₙ| for some constant c &lt; 1, where eₙ is the error at iteration n. The bisection method exhibits linear convergence.</p>
+</li>
+<li>
+<p><strong>Quadratic Convergence</strong>: If |eₙ₊₁| ≤ c·|eₙ|² for some constant c. Newton's method shows quadratic convergence when the function is well-behaved.</p>
+</li>
+<li>
+<p><strong>Superlinear Convergence</strong>: If |eₙ₊₁| ≤ c·|eₙ|ᵖ for p &gt; 1. The secant method typically has p ≈ 1.62.</p>
+</li>
+</ul>
+<h3>Stopping Criteria</h3>
+<ul>
+<li><strong>Absolute Error</strong>: ∣xₙ₊₁ − xₙ∣ &lt; ε</li>
+<li><strong>Relative Error</strong>: ∣xₙ₊₁ − xₙ∣/|xₙ₊₁| &lt; ε</li>
+<li><strong>Function Value</strong>: ∣f(xₙ)∣ &lt; ε</li>
+</ul>
+<h3>Aitken's Acceleration</h3>
+<p>Aitken's acceleration transforms a linearly convergent sequence into a more rapidly convergent one. For a sequence {pₙ}, the Aitken's accelerated sequence {p̂ₙ} is defined as:</p>
+<p>p̂ₙ = pₙ - (pₙ₊₁ - pₙ)²/(pₙ₊₂ - 2pₙ₊₁ + pₙ)</p>
+<h2>Method Descriptions with Examples</h2>
+<h3>1. Bisection Method</h3>
+<h4>Mathematical Formula</h4>
+<p>Given a continuous function f(x) and an interval [a, b] where f(a) ⋅ f(b) &lt; 0:</p>
+<p>x = a + b⁄2</p>
+<p>The root lies in [a, c] if f(a) ⋅ f(x) &lt; 0, otherwise in [x, b].</p>
+<h4>Algorithm</h4>
+<ol>
+<li><strong>Input</strong>: Function f, interval [a, b], tolerance \epsilon</li>
+<li><strong>Verify</strong>: Check that f(a) ⋅ f(b) &lt; 0</li>
+<li><strong>Iterate</strong>:</li>
+<li>Compute midpoint: x = a + b⁄2</li>
+<li>If |error| &lt; \epsilon, return x</li>
+<li>If f(a) ⋅ f(x) &lt; 0, set b = x</li>
+<li>Otherwise, set a = x</li>
+<li><strong>Repeat</strong> until convergence</li>
+</ol>
+<h4>Convergence Rate</h4>
+<p>Linear convergence with rate ≈ 0.5. Error reduces by half each iteration:
+|e_{n+1}| ≤ 1⁄2|e_n|</p>
+<h4>Implementation</h4>
+<pre><code class="language-python">def bisection_method(f, a, b, epsilon=1e-6, condition=stopping_condition_2):
+    if f(a) * f(b) ≥ 0:
+        raise ValueError(f&quot;f({a}) and f({b}) must have opposite signs&quot;)
+
+    sequence = []
+    for k in range(100):
+        x = (a + b) / 2
+        sequence.append(x)
+
+        if k &gt; 0 and condition(sequence[k], sequence[k - 1], epsilon):
+            return sequence, &quot;Second stopping condition (convergence)&quot;
+
+        if f(a) * f(x) &lt; 0:
+            b = x
+        else:
+            a = x
+
+    return sequence, &quot;First stopping condition (max iterations)&quot;
+
+</code></pre>
+<h4>Examples with Absolute Error Criterion ∣xₙ₊₁ − xₙ∣ &lt; ε</h4>
+<p><img alt="Bisection Method Graph" src="plots/bisection_graph_0_1e-06.png" /></p>
+<h5>Bisection Method Absolute Criterion (ε = 0.000001000000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Interval [a, b]</th>
+<th>Interval Length</th>
+<th>Abs. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.250000000000000</td>
+<td>-0.178474900227193</td>
+<td>0.035702564411819</td>
+<td>[1.500000000000000, 3.000000000000000]</td>
+<td>1.500000000000000</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.875000000000000</td>
+<td>1.664123320070785</td>
+<td>0.339297435588181</td>
+<td>[1.500000000000000, 2.250000000000000]</td>
+<td>0.750000000000000</td>
+<td>0.375000000000000</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.062500000000000</td>
+<td>0.756075712201294</td>
+<td>0.151797435588181</td>
+<td>[1.875000000000000, 2.250000000000000]</td>
+<td>0.375000000000000</td>
+<td>0.187500000000000</td>
+<td>2.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.156250000000000</td>
+<td>0.290074212805930</td>
+<td>0.058047435588181</td>
+<td>[2.062500000000000, 2.250000000000000]</td>
+<td>0.187500000000000</td>
+<td>0.093750000000000</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.203125000000000</td>
+<td>0.055861015797768</td>
+<td>0.011172435588181</td>
+<td>[2.156250000000000, 2.250000000000000]</td>
+<td>0.093750000000000</td>
+<td>0.046875000000000</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.226562500000000</td>
+<td>-0.061323784524178</td>
+<td>0.012265064411819</td>
+<td>[2.203125000000000, 2.250000000000000]</td>
+<td>0.046875000000000</td>
+<td>0.023437500000000</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.214843750000000</td>
+<td>-0.002731571923218</td>
+<td>0.000546314411819</td>
+<td>[2.203125000000000, 2.226562500000000]</td>
+<td>0.023437500000000</td>
+<td>0.011718750000000</td>
+<td>2.21875</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.208984375000000</td>
+<td>0.026565177957472</td>
+<td>0.005313060588181</td>
+<td>[2.203125000000000, 2.214843750000000]</td>
+<td>0.011718750000000</td>
+<td>0.005859375000000</td>
+<td>2.203125</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.211914062500000</td>
+<td>0.011916854158681</td>
+<td>0.002383373088181</td>
+<td>[2.208984375000000, 2.214843750000000]</td>
+<td>0.005859375000000</td>
+<td>0.002929687500000</td>
+<td>2.2109375</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213378906250000</td>
+<td>0.004592646045105</td>
+<td>0.000918529338181</td>
+<td>[2.211914062500000, 2.214843750000000]</td>
+<td>0.002929687500000</td>
+<td>0.001464843750000</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214111328125000</td>
+<td>0.000930537310534</td>
+<td>0.000186107463181</td>
+<td>[2.213378906250000, 2.214843750000000]</td>
+<td>0.001464843750000</td>
+<td>0.000732421875000</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214477539062500</td>
+<td>-0.000900517366726</td>
+<td>0.000180103474319</td>
+<td>[2.214111328125000, 2.214843750000000]</td>
+<td>0.000732421875000</td>
+<td>0.000366210937500</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214294433593750</td>
+<td>0.000015009972155</td>
+<td>0.000003001994431</td>
+<td>[2.214111328125000, 2.214477539062500]</td>
+<td>0.000366210937500</td>
+<td>0.000183105468750</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214385986328125</td>
+<td>-0.000442753699141</td>
+<td>0.000088550739944</td>
+<td>[2.214294433593750, 2.214477539062500]</td>
+<td>0.000183105468750</td>
+<td>0.000091552734375</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214340209960938</td>
+<td>-0.000213871863717</td>
+<td>0.000042774372757</td>
+<td>[2.214294433593750, 2.214385986328125]</td>
+<td>0.000091552734375</td>
+<td>0.000045776367188</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214317321777344</td>
+<td>-0.000099430945807</td>
+<td>0.000019886189163</td>
+<td>[2.214294433593750, 2.214340209960938]</td>
+<td>0.000045776367188</td>
+<td>0.000022888183594</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214305877685547</td>
+<td>-0.000042210486829</td>
+<td>0.000008442097366</td>
+<td>[2.214294433593750, 2.214317321777344]</td>
+<td>0.000022888183594</td>
+<td>0.000011444091797</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214300155639648</td>
+<td>-0.000013600257337</td>
+<td>0.000002720051468</td>
+<td>[2.214294433593750, 2.214305877685547]</td>
+<td>0.000011444091797</td>
+<td>0.000005722045898</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214297294616699</td>
+<td>0.000000704857409</td>
+<td>0.000000140971482</td>
+<td>[2.214294433593750, 2.214300155639648]</td>
+<td>0.000005722045898</td>
+<td>0.000002861022949</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.214298725128174</td>
+<td>-0.000006447699964</td>
+<td>0.000001289539993</td>
+<td>[2.214297294616699, 2.214300155639648]</td>
+<td>0.000002861022949</td>
+<td>0.000001430511475</td>
+<td>2.2142982482910156</td>
+</tr>
+<tr>
+<td>21</td>
+<td>2.214298009872437</td>
+<td>-0.000002871421278</td>
+<td>0.000000574284256</td>
+<td>[2.214297294616699, 2.214298725128174]</td>
+<td>0.000001430511475</td>
+<td>0.000000715255737</td>
+<td>2.2142982482910156</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214298009872437 in 21 iterations
+<strong>Final Error</strong>: 0.000000574284256
+<strong>Convergence Rate</strong>: 1.322232053655269</p>
+<p><img alt="Bisection Method Graph" src="plots/bisection_graph_1_1e-09.png" /></p>
+<h5>Bisection Method Absolute Criterion (ε = 0.000000001000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Interval [a, b]</th>
+<th>Interval Length</th>
+<th>Abs. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.250000000000000</td>
+<td>-0.178474900227193</td>
+<td>0.035702564411819</td>
+<td>[1.500000000000000, 3.000000000000000]</td>
+<td>1.500000000000000</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.875000000000000</td>
+<td>1.664123320070785</td>
+<td>0.339297435588181</td>
+<td>[1.500000000000000, 2.250000000000000]</td>
+<td>0.750000000000000</td>
+<td>0.375000000000000</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.062500000000000</td>
+<td>0.756075712201294</td>
+<td>0.151797435588181</td>
+<td>[1.875000000000000, 2.250000000000000]</td>
+<td>0.375000000000000</td>
+<td>0.187500000000000</td>
+<td>2.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.156250000000000</td>
+<td>0.290074212805930</td>
+<td>0.058047435588181</td>
+<td>[2.062500000000000, 2.250000000000000]</td>
+<td>0.187500000000000</td>
+<td>0.093750000000000</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.203125000000000</td>
+<td>0.055861015797768</td>
+<td>0.011172435588181</td>
+<td>[2.156250000000000, 2.250000000000000]</td>
+<td>0.093750000000000</td>
+<td>0.046875000000000</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.226562500000000</td>
+<td>-0.061323784524178</td>
+<td>0.012265064411819</td>
+<td>[2.203125000000000, 2.250000000000000]</td>
+<td>0.046875000000000</td>
+<td>0.023437500000000</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.214843750000000</td>
+<td>-0.002731571923218</td>
+<td>0.000546314411819</td>
+<td>[2.203125000000000, 2.226562500000000]</td>
+<td>0.023437500000000</td>
+<td>0.011718750000000</td>
+<td>2.21875</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.208984375000000</td>
+<td>0.026565177957472</td>
+<td>0.005313060588181</td>
+<td>[2.203125000000000, 2.214843750000000]</td>
+<td>0.011718750000000</td>
+<td>0.005859375000000</td>
+<td>2.203125</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.211914062500000</td>
+<td>0.011916854158681</td>
+<td>0.002383373088181</td>
+<td>[2.208984375000000, 2.214843750000000]</td>
+<td>0.005859375000000</td>
+<td>0.002929687500000</td>
+<td>2.2109375</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213378906250000</td>
+<td>0.004592646045105</td>
+<td>0.000918529338181</td>
+<td>[2.211914062500000, 2.214843750000000]</td>
+<td>0.002929687500000</td>
+<td>0.001464843750000</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214111328125000</td>
+<td>0.000930537310534</td>
+<td>0.000186107463181</td>
+<td>[2.213378906250000, 2.214843750000000]</td>
+<td>0.001464843750000</td>
+<td>0.000732421875000</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214477539062500</td>
+<td>-0.000900517366726</td>
+<td>0.000180103474319</td>
+<td>[2.214111328125000, 2.214843750000000]</td>
+<td>0.000732421875000</td>
+<td>0.000366210937500</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214294433593750</td>
+<td>0.000015009972155</td>
+<td>0.000003001994431</td>
+<td>[2.214111328125000, 2.214477539062500]</td>
+<td>0.000366210937500</td>
+<td>0.000183105468750</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214385986328125</td>
+<td>-0.000442753699141</td>
+<td>0.000088550739944</td>
+<td>[2.214294433593750, 2.214477539062500]</td>
+<td>0.000183105468750</td>
+<td>0.000091552734375</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214340209960938</td>
+<td>-0.000213871863717</td>
+<td>0.000042774372757</td>
+<td>[2.214294433593750, 2.214385986328125]</td>
+<td>0.000091552734375</td>
+<td>0.000045776367188</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214317321777344</td>
+<td>-0.000099430945807</td>
+<td>0.000019886189163</td>
+<td>[2.214294433593750, 2.214340209960938]</td>
+<td>0.000045776367188</td>
+<td>0.000022888183594</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214305877685547</td>
+<td>-0.000042210486829</td>
+<td>0.000008442097366</td>
+<td>[2.214294433593750, 2.214317321777344]</td>
+<td>0.000022888183594</td>
+<td>0.000011444091797</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214300155639648</td>
+<td>-0.000013600257337</td>
+<td>0.000002720051468</td>
+<td>[2.214294433593750, 2.214305877685547]</td>
+<td>0.000011444091797</td>
+<td>0.000005722045898</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214297294616699</td>
+<td>0.000000704857409</td>
+<td>0.000000140971482</td>
+<td>[2.214294433593750, 2.214300155639648]</td>
+<td>0.000005722045898</td>
+<td>0.000002861022949</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.214298725128174</td>
+<td>-0.000006447699964</td>
+<td>0.000001289539993</td>
+<td>[2.214297294616699, 2.214300155639648]</td>
+<td>0.000002861022949</td>
+<td>0.000001430511475</td>
+<td>2.2142982482910156</td>
+</tr>
+<tr>
+<td>21</td>
+<td>2.214298009872437</td>
+<td>-0.000002871421278</td>
+<td>0.000000574284256</td>
+<td>[2.214297294616699, 2.214298725128174]</td>
+<td>0.000001430511475</td>
+<td>0.000000715255737</td>
+<td>2.2142982482910156</td>
+</tr>
+<tr>
+<td>22</td>
+<td>2.214297652244568</td>
+<td>-0.000001083281934</td>
+<td>0.000000216656387</td>
+<td>[2.214297294616699, 2.214298009872437]</td>
+<td>0.000000715255737</td>
+<td>0.000000357627869</td>
+<td>2.214297294616699</td>
+</tr>
+<tr>
+<td>23</td>
+<td>2.214297473430634</td>
+<td>-0.000000189212263</td>
+<td>0.000000037842453</td>
+<td>[2.214297294616699, 2.214297652244568]</td>
+<td>0.000000357627869</td>
+<td>0.000000178813934</td>
+<td>2.214297294616699</td>
+</tr>
+<tr>
+<td>24</td>
+<td>2.214297384023666</td>
+<td>0.000000257822573</td>
+<td>0.000000051564514</td>
+<td>[2.214297294616699, 2.214297473430634]</td>
+<td>0.000000178813934</td>
+<td>0.000000089406967</td>
+<td>2.214297294616699</td>
+</tr>
+<tr>
+<td>25</td>
+<td>2.214297428727150</td>
+<td>0.000000034305155</td>
+<td>0.000000006861031</td>
+<td>[2.214297384023666, 2.214297473430634]</td>
+<td>0.000000089406967</td>
+<td>0.000000044703484</td>
+<td>2.2142974138259888</td>
+</tr>
+<tr>
+<td>26</td>
+<td>2.214297451078892</td>
+<td>-0.000000077453553</td>
+<td>0.000000015490711</td>
+<td>[2.214297428727150, 2.214297473430634]</td>
+<td>0.000000044703484</td>
+<td>0.000000022351742</td>
+<td>2.2142974734306335</td>
+</tr>
+<tr>
+<td>27</td>
+<td>2.214297439903021</td>
+<td>-0.000000021574199</td>
+<td>0.000000004314840</td>
+<td>[2.214297428727150, 2.214297451078892]</td>
+<td>0.000000022351742</td>
+<td>0.000000011175871</td>
+<td>2.214297443628311</td>
+</tr>
+<tr>
+<td>28</td>
+<td>2.214297434315085</td>
+<td>0.000000006365478</td>
+<td>0.000000001273095</td>
+<td>[2.214297428727150, 2.214297439903021]</td>
+<td>0.000000011175871</td>
+<td>0.000000005587935</td>
+<td>2.21429742872715</td>
+</tr>
+<tr>
+<td>29</td>
+<td>2.214297437109053</td>
+<td>-0.000000007604361</td>
+<td>0.000000001520872</td>
+<td>[2.214297434315085, 2.214297439903021]</td>
+<td>0.000000005587935</td>
+<td>0.000000002793968</td>
+<td>2.2142974361777306</td>
+</tr>
+<tr>
+<td>30</td>
+<td>2.214297435712069</td>
+<td>-0.000000000619441</td>
+<td>0.000000000123888</td>
+<td>[2.214297434315085, 2.214297437109053]</td>
+<td>0.000000002793968</td>
+<td>0.000000001396984</td>
+<td>2.2142974361777306</td>
+</tr>
+<tr>
+<td>31</td>
+<td>2.214297435013577</td>
+<td>0.000000002873018</td>
+<td>0.000000000574603</td>
+<td>[2.214297434315085, 2.214297435712069]</td>
+<td>0.000000001396984</td>
+<td>0.000000000698492</td>
+<td>2.2142974343150854</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435013577 in 31 iterations
+<strong>Final Error</strong>: 0.000000000574603
+<strong>Convergence Rate</strong>: 1.320841459834379</p>
+<h4>Examples with Relative Error Criterion ∣xₙ₊₁ − xₙ∣/|xₙ₊₁| &lt; ε</h4>
+<p><img alt="Bisection Method Graph with Relative Criterion" src="plots/bisection_graph_100_1e-06.png" /></p>
+<h5>Bisection Method with Relative Criterion (ε = 0.000001000000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Interval [a, b]</th>
+<th>Interval Length</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.250000000000000</td>
+<td>-0.178474900227193</td>
+<td>0.035702564411819</td>
+<td>[1.500000000000000, 3.000000000000000]</td>
+<td>1.500000000000000</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.875000000000000</td>
+<td>1.664123320070785</td>
+<td>0.339297435588181</td>
+<td>[1.500000000000000, 2.250000000000000]</td>
+<td>0.750000000000000</td>
+<td>0.200000000000000</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.062500000000000</td>
+<td>0.756075712201294</td>
+<td>0.151797435588181</td>
+<td>[1.875000000000000, 2.250000000000000]</td>
+<td>0.375000000000000</td>
+<td>0.090909090909091</td>
+<td>2.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.156250000000000</td>
+<td>0.290074212805930</td>
+<td>0.058047435588181</td>
+<td>[2.062500000000000, 2.250000000000000]</td>
+<td>0.187500000000000</td>
+<td>0.043478260869565</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.203125000000000</td>
+<td>0.055861015797768</td>
+<td>0.011172435588181</td>
+<td>[2.156250000000000, 2.250000000000000]</td>
+<td>0.093750000000000</td>
+<td>0.021276595744681</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.226562500000000</td>
+<td>-0.061323784524178</td>
+<td>0.012265064411819</td>
+<td>[2.203125000000000, 2.250000000000000]</td>
+<td>0.046875000000000</td>
+<td>0.010526315789474</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.214843750000000</td>
+<td>-0.002731571923218</td>
+<td>0.000546314411819</td>
+<td>[2.203125000000000, 2.226562500000000]</td>
+<td>0.023437500000000</td>
+<td>0.005291005291005</td>
+<td>2.21875</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.208984375000000</td>
+<td>0.026565177957472</td>
+<td>0.005313060588181</td>
+<td>[2.203125000000000, 2.214843750000000]</td>
+<td>0.011718750000000</td>
+<td>0.002652519893899</td>
+<td>2.203125</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.211914062500000</td>
+<td>0.011916854158681</td>
+<td>0.002383373088181</td>
+<td>[2.208984375000000, 2.214843750000000]</td>
+<td>0.005859375000000</td>
+<td>0.001324503311258</td>
+<td>2.2109375</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213378906250000</td>
+<td>0.004592646045105</td>
+<td>0.000918529338181</td>
+<td>[2.211914062500000, 2.214843750000000]</td>
+<td>0.002929687500000</td>
+<td>0.000661813368630</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214111328125000</td>
+<td>0.000930537310534</td>
+<td>0.000186107463181</td>
+<td>[2.213378906250000, 2.214843750000000]</td>
+<td>0.001464843750000</td>
+<td>0.000330797221303</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214477539062500</td>
+<td>-0.000900517366726</td>
+<td>0.000180103474319</td>
+<td>[2.214111328125000, 2.214843750000000]</td>
+<td>0.000732421875000</td>
+<td>0.000165371258475</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214294433593750</td>
+<td>0.000015009972155</td>
+<td>0.000003001994431</td>
+<td>[2.214111328125000, 2.214477539062500]</td>
+<td>0.000366210937500</td>
+<td>0.000082692466716</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214385986328125</td>
+<td>-0.000442753699141</td>
+<td>0.000088550739944</td>
+<td>[2.214294433593750, 2.214477539062500]</td>
+<td>0.000183105468750</td>
+<td>0.000041344523918</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214340209960938</td>
+<td>-0.000213871863717</td>
+<td>0.000042774372757</td>
+<td>[2.214294433593750, 2.214385986328125]</td>
+<td>0.000091552734375</td>
+<td>0.000020672689310</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214317321777344</td>
+<td>-0.000099430945807</td>
+<td>0.000019886189163</td>
+<td>[2.214294433593750, 2.214340209960938]</td>
+<td>0.000045776367188</td>
+<td>0.000010336451496</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214305877685547</td>
+<td>-0.000042210486829</td>
+<td>0.000008442097366</td>
+<td>[2.214294433593750, 2.214317321777344]</td>
+<td>0.000022888183594</td>
+<td>0.000005168252459</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214300155639648</td>
+<td>-0.000013600257337</td>
+<td>0.000002720051468</td>
+<td>[2.214294433593750, 2.214305877685547]</td>
+<td>0.000011444091797</td>
+<td>0.000002584132907</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214297294616699</td>
+<td>0.000000704857409</td>
+<td>0.000000140971482</td>
+<td>[2.214294433593750, 2.214300155639648]</td>
+<td>0.000005722045898</td>
+<td>0.000001292068123</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.214298725128174</td>
+<td>-0.000006447699964</td>
+<td>0.000001289539993</td>
+<td>[2.214297294616699, 2.214300155639648]</td>
+<td>0.000002861022949</td>
+<td>0.000000646033644</td>
+<td>2.2142982482910156</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214298725128174 in 20 iterations
+<strong>Final Error</strong>: 0.000001289539993
+<strong>Convergence Rate</strong>: 1.322232053655269</p>
+<p><img alt="Bisection Method Graph with Relative Criterion" src="plots/bisection_graph_101_1e-09.png" /></p>
+<h5>Bisection Method with Relative Criterion (ε = 0.000000001000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Interval [a, b]</th>
+<th>Interval Length</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.250000000000000</td>
+<td>-0.178474900227193</td>
+<td>0.035702564411819</td>
+<td>[1.500000000000000, 3.000000000000000]</td>
+<td>1.500000000000000</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.875000000000000</td>
+<td>1.664123320070785</td>
+<td>0.339297435588181</td>
+<td>[1.500000000000000, 2.250000000000000]</td>
+<td>0.750000000000000</td>
+<td>0.200000000000000</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.062500000000000</td>
+<td>0.756075712201294</td>
+<td>0.151797435588181</td>
+<td>[1.875000000000000, 2.250000000000000]</td>
+<td>0.375000000000000</td>
+<td>0.090909090909091</td>
+<td>2.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.156250000000000</td>
+<td>0.290074212805930</td>
+<td>0.058047435588181</td>
+<td>[2.062500000000000, 2.250000000000000]</td>
+<td>0.187500000000000</td>
+<td>0.043478260869565</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.203125000000000</td>
+<td>0.055861015797768</td>
+<td>0.011172435588181</td>
+<td>[2.156250000000000, 2.250000000000000]</td>
+<td>0.093750000000000</td>
+<td>0.021276595744681</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.226562500000000</td>
+<td>-0.061323784524178</td>
+<td>0.012265064411819</td>
+<td>[2.203125000000000, 2.250000000000000]</td>
+<td>0.046875000000000</td>
+<td>0.010526315789474</td>
+<td>2.25</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.214843750000000</td>
+<td>-0.002731571923218</td>
+<td>0.000546314411819</td>
+<td>[2.203125000000000, 2.226562500000000]</td>
+<td>0.023437500000000</td>
+<td>0.005291005291005</td>
+<td>2.21875</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.208984375000000</td>
+<td>0.026565177957472</td>
+<td>0.005313060588181</td>
+<td>[2.203125000000000, 2.214843750000000]</td>
+<td>0.011718750000000</td>
+<td>0.002652519893899</td>
+<td>2.203125</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.211914062500000</td>
+<td>0.011916854158681</td>
+<td>0.002383373088181</td>
+<td>[2.208984375000000, 2.214843750000000]</td>
+<td>0.005859375000000</td>
+<td>0.001324503311258</td>
+<td>2.2109375</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213378906250000</td>
+<td>0.004592646045105</td>
+<td>0.000918529338181</td>
+<td>[2.211914062500000, 2.214843750000000]</td>
+<td>0.002929687500000</td>
+<td>0.000661813368630</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214111328125000</td>
+<td>0.000930537310534</td>
+<td>0.000186107463181</td>
+<td>[2.213378906250000, 2.214843750000000]</td>
+<td>0.001464843750000</td>
+<td>0.000330797221303</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214477539062500</td>
+<td>-0.000900517366726</td>
+<td>0.000180103474319</td>
+<td>[2.214111328125000, 2.214843750000000]</td>
+<td>0.000732421875000</td>
+<td>0.000165371258475</td>
+<td>2.21484375</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214294433593750</td>
+<td>0.000015009972155</td>
+<td>0.000003001994431</td>
+<td>[2.214111328125000, 2.214477539062500]</td>
+<td>0.000366210937500</td>
+<td>0.000082692466716</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214385986328125</td>
+<td>-0.000442753699141</td>
+<td>0.000088550739944</td>
+<td>[2.214294433593750, 2.214477539062500]</td>
+<td>0.000183105468750</td>
+<td>0.000041344523918</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214340209960938</td>
+<td>-0.000213871863717</td>
+<td>0.000042774372757</td>
+<td>[2.214294433593750, 2.214385986328125]</td>
+<td>0.000091552734375</td>
+<td>0.000020672689310</td>
+<td>2.21435546875</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214317321777344</td>
+<td>-0.000099430945807</td>
+<td>0.000019886189163</td>
+<td>[2.214294433593750, 2.214340209960938]</td>
+<td>0.000045776367188</td>
+<td>0.000010336451496</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214305877685547</td>
+<td>-0.000042210486829</td>
+<td>0.000008442097366</td>
+<td>[2.214294433593750, 2.214317321777344]</td>
+<td>0.000022888183594</td>
+<td>0.000005168252459</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214300155639648</td>
+<td>-0.000013600257337</td>
+<td>0.000002720051468</td>
+<td>[2.214294433593750, 2.214305877685547]</td>
+<td>0.000011444091797</td>
+<td>0.000002584132907</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214297294616699</td>
+<td>0.000000704857409</td>
+<td>0.000000140971482</td>
+<td>[2.214294433593750, 2.214300155639648]</td>
+<td>0.000005722045898</td>
+<td>0.000001292068123</td>
+<td>2.21429443359375</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.214298725128174</td>
+<td>-0.000006447699964</td>
+<td>0.000001289539993</td>
+<td>[2.214297294616699, 2.214300155639648]</td>
+<td>0.000002861022949</td>
+<td>0.000000646033644</td>
+<td>2.2142982482910156</td>
+</tr>
+<tr>
+<td>21</td>
+<td>2.214298009872437</td>
+<td>-0.000002871421278</td>
+<td>0.000000574284256</td>
+<td>[2.214297294616699, 2.214298725128174]</td>
+<td>0.000001430511475</td>
+<td>0.000000323016926</td>
+<td>2.2142982482910156</td>
+</tr>
+<tr>
+<td>22</td>
+<td>2.214297652244568</td>
+<td>-0.000001083281934</td>
+<td>0.000000216656387</td>
+<td>[2.214297294616699, 2.214298009872437]</td>
+<td>0.000000715255737</td>
+<td>0.000000161508489</td>
+<td>2.214297294616699</td>
+</tr>
+<tr>
+<td>23</td>
+<td>2.214297473430634</td>
+<td>-0.000000189212263</td>
+<td>0.000000037842453</td>
+<td>[2.214297294616699, 2.214297652244568]</td>
+<td>0.000000357627869</td>
+<td>0.000000080754251</td>
+<td>2.214297294616699</td>
+</tr>
+<tr>
+<td>24</td>
+<td>2.214297384023666</td>
+<td>0.000000257822573</td>
+<td>0.000000051564514</td>
+<td>[2.214297294616699, 2.214297473430634]</td>
+<td>0.000000178813934</td>
+<td>0.000000040377127</td>
+<td>2.214297294616699</td>
+</tr>
+<tr>
+<td>25</td>
+<td>2.214297428727150</td>
+<td>0.000000034305155</td>
+<td>0.000000006861031</td>
+<td>[2.214297384023666, 2.214297473430634]</td>
+<td>0.000000089406967</td>
+<td>0.000000020188563</td>
+<td>2.2142974138259888</td>
+</tr>
+<tr>
+<td>26</td>
+<td>2.214297451078892</td>
+<td>-0.000000077453553</td>
+<td>0.000000015490711</td>
+<td>[2.214297428727150, 2.214297473430634]</td>
+<td>0.000000044703484</td>
+<td>0.000000010094281</td>
+<td>2.2142974734306335</td>
+</tr>
+<tr>
+<td>27</td>
+<td>2.214297439903021</td>
+<td>-0.000000021574199</td>
+<td>0.000000004314840</td>
+<td>[2.214297428727150, 2.214297451078892]</td>
+<td>0.000000022351742</td>
+<td>0.000000005047141</td>
+<td>2.214297443628311</td>
+</tr>
+<tr>
+<td>28</td>
+<td>2.214297434315085</td>
+<td>0.000000006365478</td>
+<td>0.000000001273095</td>
+<td>[2.214297428727150, 2.214297439903021]</td>
+<td>0.000000011175871</td>
+<td>0.000000002523570</td>
+<td>2.21429742872715</td>
+</tr>
+<tr>
+<td>29</td>
+<td>2.214297437109053</td>
+<td>-0.000000007604361</td>
+<td>0.000000001520872</td>
+<td>[2.214297434315085, 2.214297439903021]</td>
+<td>0.000000005587935</td>
+<td>0.000000001261785</td>
+<td>2.2142974361777306</td>
+</tr>
+<tr>
+<td>30</td>
+<td>2.214297435712069</td>
+<td>-0.000000000619441</td>
+<td>0.000000000123888</td>
+<td>[2.214297434315085, 2.214297437109053]</td>
+<td>0.000000002793968</td>
+<td>0.000000000630893</td>
+<td>2.2142974361777306</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435712069 in 30 iterations
+<strong>Final Error</strong>: 0.000000000123888
+<strong>Convergence Rate</strong>: 1.320841459834379</p>
+<h4>Comparison of Stopping Criteria for Bisection Method</h4>
+<p><img alt="Stopping Criteria Comparison" src="plots/stopping_criteria_Bisection_1e-06.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Iterations</th>
+<th>Final Value</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Absolute</td>
+<td>21</td>
+<td>2.214298009872437</td>
+<td>0.000000574284256</td>
+</tr>
+<tr>
+<td>Relative</td>
+<td>20</td>
+<td>2.214298725128174</td>
+<td>0.000001289539993</td>
+</tr>
+</tbody>
+</table>
+<h3>2. Newton's Method</h3>
+<h4>Mathematical Formula</h4>
+<p>Starting with an initial guess x₍0₎, the Newton-Raphson iteration is:</p>
+<p>x_{n+1} = x_n - f(x_n)⁄f'(x_n)</p>
+<p>This formula comes from the linear approximation of f(x) at x_n:
+f(x) ≈ f(x_n) + f'(x_n)(x - x_n)</p>
+<p>Setting f(x) = 0 and solving for x gives the Newton iteration.</p>
+<h4>Algorithm</h4>
+<ol>
+<li><strong>Input</strong>: Function f, derivative f', initial guess x₍0₎, tolerance \epsilon</li>
+<li><strong>Initialize</strong>: Set n = 0</li>
+<li><strong>Iterate</strong>:</li>
+<li>Compute x_{n+1} = x_n - f(x_n)⁄f'(x_n)</li>
+<li>If |error| &lt; \epsilon, return x_{n+1}</li>
+<li>Set n = n + 1</li>
+<li><strong>Repeat</strong> until convergence or maximum iterations</li>
+</ol>
+<h4>Convergence Rate</h4>
+<p>Quadratic convergence when f'(r) ≠ 0 at the root r:
+|e_{n+1}| ≤ C|e_n|^2</p>
+<p>where C = |f''(r)|⁄2|f'(r)|</p>
+<h4>Implementation</h4>
+<pre><code class="language-python">def newton_method(f, df, x0, epsilon=1e-6, condition=stopping_condition_2):
+    sequence = [x0]
+    x = x0
+
+    for k in range(100):
+        try:
+            x_new = x - f(x) / df(x)
+            sequence.append(x_new)
+
+            if condition(sequence[k], sequence[k - 1], epsilon):
+                return sequence, &quot;Second stopping condition (convergence)&quot;
+
+            x = x_new
+
+        except ZeroDivisionError:
+            return sequence, &quot;Error: Zero derivative&quot;
+
+    return sequence, &quot;First stopping condition (max iterations)&quot;
+
+</code></pre>
+<h4>Examples with Absolute Error Criterion ∣xₙ₊₁ − xₙ∣ &lt; ε</h4>
+<p><img alt="Newton's Method Graph" src="plots/newton_graph_0_1e-06.png" /></p>
+<h5>Newton's Method (ε = 0.000001000000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>f'(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>1.063304934288475</td>
+<td>7.389056098930650</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.217639257797441</td>
+<td>-0.016709079945716</td>
+<td>9.185620367861599</td>
+<td>0.003341822209260</td>
+<td>0.217639257797441</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297423147885</td>
+<td>0.000000062201478</td>
+<td>9.154974778205764</td>
+<td>0.000000012440295</td>
+<td>0.003341834649556</td>
+<td>2.2143479607694583</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>9.154974892096355</td>
+<td>0.000000000000000</td>
+<td>0.000000012440295</td>
+<td>2.214297435588134</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>9.154974892096355</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.2142974355881804</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 5 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 3.004455781252174</p>
+<p><img alt="Newton's Method Graph" src="plots/newton_graph_1_1e-09.png" /></p>
+<h5>Newton's Method (ε = 0.000000001000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>f'(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>1.063304934288475</td>
+<td>7.389056098930650</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.217639257797441</td>
+<td>-0.016709079945716</td>
+<td>9.185620367861599</td>
+<td>0.003341822209260</td>
+<td>0.217639257797441</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297423147885</td>
+<td>0.000000062201478</td>
+<td>9.154974778205764</td>
+<td>0.000000012440295</td>
+<td>0.003341834649556</td>
+<td>2.2143479607694583</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>9.154974892096355</td>
+<td>0.000000000000000</td>
+<td>0.000000012440295</td>
+<td>2.214297435588134</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>9.154974892096355</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.2142974355881804</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>9.154974892096355</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.214297435588181</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 6 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 3.004455781252174</p>
+<h4>Examples with Relative Error Criterion ∣xₙ₊₁ − xₙ∣/|xₙ₊₁| &lt; ε</h4>
+<p><img alt="Newton's Method Graph with Relative Criterion" src="plots/newton_graph_100_1e-06.png" /></p>
+<h5>Newton's Method with Relative Criterion (ε = 0.000001000000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>f'(xₙ)</th>
+<th>Error</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>1.063304934288475</td>
+<td>-4.885630216944154</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.217639257797441</td>
+<td>-0.016709079945716</td>
+<td>-4.999972080586787</td>
+<td>0.003341822209260</td>
+<td>0.098140063597900</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297423147885</td>
+<td>0.000000062201478</td>
+<td>-5.000000000000000</td>
+<td>0.000000012440295</td>
+<td>0.001509207667688</td>
+<td>2.2143479607694583</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000005618168</td>
+<td>2.214297435588134</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.2142974355881804</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 5 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 3.004455781252174</p>
+<p><img alt="Newton's Method Graph with Relative Criterion" src="plots/newton_graph_101_1e-09.png" /></p>
+<h5>Newton's Method with Relative Criterion (ε = 0.000000001000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>f'(xₙ)</th>
+<th>Error</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>1.063304934288475</td>
+<td>-4.885630216944154</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.217639257797441</td>
+<td>-0.016709079945716</td>
+<td>-4.999972080586787</td>
+<td>0.003341822209260</td>
+<td>0.098140063597900</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297423147885</td>
+<td>0.000000062201478</td>
+<td>-5.000000000000000</td>
+<td>0.000000012440295</td>
+<td>0.001509207667688</td>
+<td>2.2143479607694583</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000005618168</td>
+<td>2.214297435588134</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.2142974355881804</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.214297435588181</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 6 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 3.004455781252174</p>
+<h4>Comparison of Stopping Criteria for Newton's Method</h4>
+<p><img alt="Stopping Criteria Comparison" src="plots/stopping_criteria_Newton_1e-06.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Iterations</th>
+<th>Final Value</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Absolute</td>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000000</td>
+</tr>
+<tr>
+<td>Relative</td>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000000</td>
+</tr>
+</tbody>
+</table>
+<h3>3. Secant Method</h3>
+<h4>Mathematical Formula</h4>
+<p>The secant method approximates the derivative using two previous points:</p>
+<p>x_{n+1} = x_n - f(x_n) ⋅ \frac{x_n - x_{n-1}}{f(x_n) - f(x_{n-1})}</p>
+<p>This can be rewritten as:
+x_{n+1} = \frac{x_{n-1}f(x_n) - x_n f(x_{n-1})}{f(x_n) - f(x_{n-1})}</p>
+<h4>Algorithm</h4>
+<ol>
+<li><strong>Input</strong>: Function f, two initial points x₍0₎, x₍1₎, tolerance \epsilon</li>
+<li><strong>Initialize</strong>: Set n = 1</li>
+<li><strong>Iterate</strong>:</li>
+<li>Compute x_{n+1} = x_n - f(x_n) ⋅ \frac{x_n - x_{n-1}}{f(x_n) - f(x_{n-1})}</li>
+<li>If |error| &lt; \epsilon, return x_{n+1}</li>
+<li>Set n = n + 1</li>
+<li><strong>Repeat</strong> until convergence or maximum iterations</li>
+</ol>
+<h4>Convergence Rate</h4>
+<p>Superlinear convergence with rate ϕ = \frac{1 + \sqrt{5}}{2} ≈ 1.618 (golden ratio):
+|e_{n+1}| ≤ C|e_n|^ϕ</p>
+<h4>Implementation</h4>
+<pre><code class="language-python">def secant_method(f, x0, x1, epsilon=1e-6, condition=stopping_condition_2):
+    sequence = []
+    for k in range(100):
+        try:
+            f0, f1 = f(x0), f(x1)
+            if abs(f1 - f0) &lt; 1e-19:
+                return sequence, &quot;Error: Division by zero&quot;
+
+            x_new = x1 - f1 * (x1 - x0) / (f1 - f0)
+            sequence.append(x_new)
+
+            if k &gt; 0 and condition(sequence[k], sequence[k - 1], epsilon):
+                return sequence, &quot;Second stopping condition (convergence)&quot;
+
+            x0, x1 = x1, x_new
+
+        except (ZeroDivisionError, OverflowError):
+            return sequence, &quot;Error: Non-convergence&quot;
+
+    return sequence, &quot;First stopping condition (max iterations)&quot;
+
+</code></pre>
+<h4>Examples with Absolute Error Criterion ∣xₙ₊₁ − xₙ∣ &lt; ε</h4>
+<p><img alt="Secant Method Graph" src="plots/secant_graph_0_1e-06.png" /></p>
+<h5>f(x) = 3<em>sin(x) + 4</em>cos(x) (ε = 1e-06, absolute criterion)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.221244731448364</td>
+<td>-0.034736199876025</td>
+<td>0.006947295860183</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.213520010199476</td>
+<td>0.003887126551967</td>
+<td>0.000777425388705</td>
+<td>0.007724721248888</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297441142124</td>
+<td>-0.000000027769715</td>
+<td>0.000000005553943</td>
+<td>0.000777430942648</td>
+<td>2.2142263533919904</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000003</td>
+<td>0.000000000000000</td>
+<td>0.000000005553944</td>
+<td>2.21429743558822</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588180 in 4 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 5.410312797770888</p>
+<p><img alt="Secant Method Graph" src="plots/secant_graph_1_1e-06.png" /></p>
+<h5>Secant method from bisection [a, b] (ε = 1e-06, absolute)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.221244731448364</td>
+<td>-0.034736199876025</td>
+<td>0.006947295860183</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.213520010199476</td>
+<td>0.003887126551967</td>
+<td>0.000777425388705</td>
+<td>0.007724721248888</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297441142124</td>
+<td>-0.000000027769715</td>
+<td>0.000000005553943</td>
+<td>0.000777430942648</td>
+<td>2.2142263533919904</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000003</td>
+<td>0.000000000000000</td>
+<td>0.000000005553944</td>
+<td>2.21429743558822</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588180 in 4 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 5.410312797770888</p>
+<p><img alt="Secant Method Graph" src="plots/secant_graph_2_1e-06.png" /></p>
+<h5>Secant method from bisection [x9, x10] (ε = 1e-06, absolute)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.214297435619653</td>
+<td>-0.000000000157360</td>
+<td>0.000000000031472</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>0.000000000000000</td>
+<td>0.000000000031472</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 2 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: Insufficient data</p>
+<p><img alt="Secant Method Graph" src="plots/secant_graph_3_1e-06.png" /></p>
+<h5>Secant method from Newton [x2, x3] (ε = 1e-06, absolute)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>0.000000000000000</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 1 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: Insufficient data</p>
+<p><img alt="Secant Method Graph" src="plots/secant_graph_4_1e-09.png" /></p>
+<h5>f(x) = 3<em>sin(x) + 4</em>cos(x) (ε = 1e-09, absolute criterion)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.221244731448364</td>
+<td>-0.034736199876025</td>
+<td>0.006947295860183</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.213520010199476</td>
+<td>0.003887126551967</td>
+<td>0.000777425388705</td>
+<td>0.007724721248888</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297441142124</td>
+<td>-0.000000027769715</td>
+<td>0.000000005553943</td>
+<td>0.000777430942648</td>
+<td>2.2142263533919904</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000003</td>
+<td>0.000000000000000</td>
+<td>0.000000005553944</td>
+<td>2.21429743558822</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.214297435588181</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 5 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 5.410312797770888</p>
+<p><img alt="Secant Method Graph" src="plots/secant_graph_5_1e-09.png" /></p>
+<h5>Secant method from bisection [a, b] (ε = 1e-09, absolute)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.221244731448364</td>
+<td>-0.034736199876025</td>
+<td>0.006947295860183</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.213520010199476</td>
+<td>0.003887126551967</td>
+<td>0.000777425388705</td>
+<td>0.007724721248888</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297441142124</td>
+<td>-0.000000027769715</td>
+<td>0.000000005553943</td>
+<td>0.000777430942648</td>
+<td>2.2142263533919904</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000003</td>
+<td>0.000000000000000</td>
+<td>0.000000005553944</td>
+<td>2.21429743558822</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+<td>2.214297435588181</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 5 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 5.410312797770888</p>
+<p><img alt="Secant Method Graph" src="plots/secant_graph_6_1e-09.png" /></p>
+<h5>Secant method from bisection [x9, x10] (ε = 1e-09, absolute)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Abs. Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.214297435619653</td>
+<td>-0.000000000157360</td>
+<td>0.000000000031472</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>0.000000000000000</td>
+<td>0.000000000031472</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 2 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: Insufficient data</p>
+<h4>Examples with Relative Error Criterion ∣xₙ₊₁ − xₙ∣/|xₙ₊₁| &lt; ε</h4>
+<p><img alt="Secant Method Graph with Relative Criterion" src="plots/secant_graph_100_1e-06.png" /></p>
+<h5>f(x) = 3<em>sin(x) + 4</em>cos(x) (ε = 1e-06, relative criterion)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.221244731448364</td>
+<td>-0.034736199876025</td>
+<td>-4.999879338185890</td>
+<td>0.006947295860183</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.213520010199476</td>
+<td>0.003887126551967</td>
+<td>-4.999998489024489</td>
+<td>0.000777425388705</td>
+<td>0.003489790565838</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297441142124</td>
+<td>-0.000000027769715</td>
+<td>-5.000000000000000</td>
+<td>0.000000005553943</td>
+<td>0.000351095985662</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000003</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000002508219</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588180 in 4 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 5.410312797770888</p>
+<p><img alt="Secant Method Graph with Relative Criterion" src="plots/secant_graph_101_1e-09.png" /></p>
+<h5>f(x) = 3<em>sin(x) + 4</em>cos(x) (ε = 1e-09, relative criterion)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.221244731448364</td>
+<td>-0.034736199876025</td>
+<td>-4.999879338185890</td>
+<td>0.006947295860183</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.213520010199476</td>
+<td>0.003887126551967</td>
+<td>-4.999998489024489</td>
+<td>0.000777425388705</td>
+<td>0.003489790565838</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.214297441142124</td>
+<td>-0.000000027769715</td>
+<td>-5.000000000000000</td>
+<td>0.000000005553943</td>
+<td>0.000351095985662</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000003</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000002508219</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.214297435588181</td>
+<td>0.000000000000001</td>
+<td>-5.000000000000000</td>
+<td>0.000000000000000</td>
+<td>0.000000000000000</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297435588181 in 5 iterations
+<strong>Final Error</strong>: 0.000000000000000
+<strong>Convergence Rate</strong>: 5.410312797770888</p>
+<h4>Comparison of Stopping Criteria for Secant Method</h4>
+<p><img alt="Stopping Criteria Comparison" src="plots/stopping_criteria_Secant_1e-06.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Iterations</th>
+<th>Final Value</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Absolute</td>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000000</td>
+</tr>
+<tr>
+<td>Relative</td>
+<td>4</td>
+<td>2.214297435588180</td>
+<td>0.000000000000000</td>
+</tr>
+</tbody>
+</table>
+<h3>4. Fixed-point Method</h3>
+<h4>Mathematical Formula</h4>
+<p>Transform the equation f(x) = 0 into the equivalent form x = g(x), then iterate:</p>
+<p>x_{n+1} = g(x_n)</p>
+<h4>Algorithm</h4>
+<ol>
+<li><strong>Input</strong>: Function f, initial guess x₍0₎, tolerance \epsilon</li>
+<li><strong>Transform</strong>: Define g(x) such that f(x) = 0 \Leftrightarrow x = g(x)</li>
+<li><strong>Initialize</strong>: Set n = 0</li>
+<li><strong>Iterate</strong>:</li>
+<li>Compute x_{n+1} = g(x_n)</li>
+<li>If |error| &lt; \epsilon, return x_{n+1}</li>
+<li>Set n = n + 1</li>
+<li><strong>Repeat</strong> until convergence or maximum iterations</li>
+</ol>
+<h4>Convergence Condition</h4>
+<p>Convergence requires |g'(r)| &lt; 1 at the fixed point r:
+|e_{n+1}| ≤ |g'(\xi)||e_n|</p>
+<p>where \xi lies between x_n and r.</p>
+<h4>Implementation</h4>
+<pre><code class="language-python">def fixed_point_method(f, x0, g, epsilon=1e-6, condition=stopping_condition_2):
+    sequence = [x0]
+    x = x0
+
+    for k in range(100):
+        try:
+            x_new = g(x)
+            sequence.append(x_new)
+
+            if condition(sequence[k], sequence[k - 1], epsilon):
+                return sequence, &quot;Second stopping condition (convergence)&quot;
+
+            if abs(x_new) &gt; 1e10 or math.isnan(x_new) or math.isinf(x_new):
+                return sequence, &quot;Error: Divergence&quot;
+
+            x = x_new
+
+        except Exception:
+            return sequence, &quot;Error: Non-convergence&quot;
+
+    return sequence, &quot;First stopping condition (max iterations)&quot;
+
+</code></pre>
+<h4>Best g(x) Function</h4>
+<p>The best g(x) function is: <strong>x + 0.1 * f(x)</strong></p>
+<table>
+<thead>
+<tr>
+<th>g(x)</th>
+<th>Convergence</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x - 0.01 * f(x)</td>
+<td>No</td>
+<td>4.868086038083111</td>
+</tr>
+<tr>
+<td>x + 0.01 * f(x)</td>
+<td>No</td>
+<td>0.082781966380898</td>
+</tr>
+<tr>
+<td>x - 0.05 * f(x)</td>
+<td>Yes</td>
+<td>0.000102981922725</td>
+</tr>
+<tr>
+<td>x + 0.05 * f(x)</td>
+<td>Yes</td>
+<td>0.000000610362191</td>
+</tr>
+<tr>
+<td>x - 0.1 * f(x)</td>
+<td>Yes</td>
+<td>0.000000000938023</td>
+</tr>
+<tr>
+<td>x + 0.1 * f(x)</td>
+<td>Yes</td>
+<td>0.000000000504064</td>
+</tr>
+<tr>
+<td>x - 0.5 * f(x)</td>
+<td>No</td>
+<td>4.524410342605131</td>
+</tr>
+<tr>
+<td>x + 0.5 * f(x)</td>
+<td>No</td>
+<td>4.524410342605132</td>
+</tr>
+<tr>
+<td>x - 1.0 * f(x)</td>
+<td>No</td>
+<td>4.171674420802168</td>
+</tr>
+<tr>
+<td>x + 1.0 * f(x)</td>
+<td>No</td>
+<td>0.343884535127269</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="g(x) Functions Comparison" src="plots/g_functions_comparison.png" /></p>
+<p><strong>Explanation</strong>:</p>
+<ul>
+<li>The plot shows different g(x) functions and their derivatives</li>
+<li>For convergence, we need |g'(x)| &lt; 1 at the root (shaded green area in right plot)</li>
+<li>The best g(x) has its derivative closest to 0 at the root, giving fastest convergence</li>
+<li>Functions with g'(x) outside [-1,1] at the root will diverge</li>
+</ul>
+<h4>Examples with Absolute Error Criterion ∣xₙ₊₁ − xₙ∣ &lt; ε</h4>
+<p><img alt="Fixed-point Method Graph" src="plots/fixed_point_graph_0_1e-06.png" /></p>
+<h5>Fixed-point Method (ε = 0.000001000000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>g(xₙ)</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>3.063304934288476</td>
+<td>1.063304934288475</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.106330493428847</td>
+<td>2.645117019011117</td>
+<td>0.538786525582269</td>
+<td>0.107966942159333</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.160209145987074</td>
+<td>2.430518748595957</td>
+<td>0.270309602608882</td>
+<td>0.054088289601106</td>
+<td>2.215553422819048</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.187240106247963</td>
+<td>2.322510246348561</td>
+<td>0.135270140100598</td>
+<td>0.027057329340218</td>
+<td>2.214455585497856</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.200767120258022</td>
+<td>2.268416632771748</td>
+<td>0.067649512513726</td>
+<td>0.013530315330159</td>
+<td>2.214317241432201</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.207532071509395</td>
+<td>2.241358633860802</td>
+<td>0.033826562351407</td>
+<td>0.006765364078786</td>
+<td>2.2142999124873044</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.210914727744536</td>
+<td>2.227828234706653</td>
+<td>0.016913506962118</td>
+<td>0.003382707843645</td>
+<td>2.214297745237162</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.212606078440747</td>
+<td>2.221062860145878</td>
+<td>0.008456781705130</td>
+<td>0.001691357147434</td>
+<td>2.2142974742954493</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.213451756611260</td>
+<td>2.217680150991858</td>
+<td>0.004228394380597</td>
+<td>0.000845678976920</td>
+<td>2.214297440426624</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213874596049320</td>
+<td>2.215988793680623</td>
+<td>0.002114197631303</td>
+<td>0.000422839538861</td>
+<td>2.2142974361929864</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214086015812450</td>
+<td>2.215143114683228</td>
+<td>0.001057098870778</td>
+<td>0.000211419775730</td>
+<td>2.2142974356637812</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214191725699528</td>
+<td>2.214720275141808</td>
+<td>0.000528549442280</td>
+<td>0.000105709888653</td>
+<td>2.2142974355976306</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214244580643756</td>
+<td>2.214508855365758</td>
+<td>0.000264274722002</td>
+<td>0.000052854944425</td>
+<td>2.2142974355893608</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214271008115956</td>
+<td>2.214403145477065</td>
+<td>0.000132137361109</td>
+<td>0.000026427472225</td>
+<td>2.2142974355883296</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214284221852067</td>
+<td>2.214350290532635</td>
+<td>0.000066068680568</td>
+<td>0.000013213736114</td>
+<td>2.2142974355881986</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214290828720124</td>
+<td>2.214323863060410</td>
+<td>0.000033034340286</td>
+<td>0.000006606868057</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214294132154152</td>
+<td>2.214310649324296</td>
+<td>0.000016517170144</td>
+<td>0.000003303434029</td>
+<td>2.214297435588183</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214295783871167</td>
+<td>2.214304042456239</td>
+<td>0.000008258585072</td>
+<td>0.000001651717014</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214296609729674</td>
+<td>2.214300739022209</td>
+<td>0.000004129292535</td>
+<td>0.000000825858507</td>
+<td>2.2142974355881817</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.214297022658927</td>
+<td>2.214299087305196</td>
+<td>0.000002064646268</td>
+<td>0.000000412929253</td>
+<td>2.214297435588182</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged
+<strong>Final Value</strong>: 2.214297022658927 in 20 iterations
+<strong>Final Error</strong>: 0.000000412929253
+<strong>Convergence Rate</strong>: 1.000615115141705</p>
+<p><img alt="Fixed-point Method Graph" src="plots/fixed_point_graph_1_1e-09.png" /></p>
+<h5>Fixed-point Method (ε = 0.000000001000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>g(xₙ)</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>3.063304934288476</td>
+<td>1.063304934288475</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.106330493428847</td>
+<td>2.645117019011117</td>
+<td>0.538786525582269</td>
+<td>0.107966942159333</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.160209145987074</td>
+<td>2.430518748595957</td>
+<td>0.270309602608882</td>
+<td>0.054088289601106</td>
+<td>2.215553422819048</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.187240106247963</td>
+<td>2.322510246348561</td>
+<td>0.135270140100598</td>
+<td>0.027057329340218</td>
+<td>2.214455585497856</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.200767120258022</td>
+<td>2.268416632771748</td>
+<td>0.067649512513726</td>
+<td>0.013530315330159</td>
+<td>2.214317241432201</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.207532071509395</td>
+<td>2.241358633860802</td>
+<td>0.033826562351407</td>
+<td>0.006765364078786</td>
+<td>2.2142999124873044</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.210914727744536</td>
+<td>2.227828234706653</td>
+<td>0.016913506962118</td>
+<td>0.003382707843645</td>
+<td>2.214297745237162</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.212606078440747</td>
+<td>2.221062860145878</td>
+<td>0.008456781705130</td>
+<td>0.001691357147434</td>
+<td>2.2142974742954493</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.213451756611260</td>
+<td>2.217680150991858</td>
+<td>0.004228394380597</td>
+<td>0.000845678976920</td>
+<td>2.214297440426624</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213874596049320</td>
+<td>2.215988793680623</td>
+<td>0.002114197631303</td>
+<td>0.000422839538861</td>
+<td>2.2142974361929864</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214086015812450</td>
+<td>2.215143114683228</td>
+<td>0.001057098870778</td>
+<td>0.000211419775730</td>
+<td>2.2142974356637812</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214191725699528</td>
+<td>2.214720275141808</td>
+<td>0.000528549442280</td>
+<td>0.000105709888653</td>
+<td>2.2142974355976306</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214244580643756</td>
+<td>2.214508855365758</td>
+<td>0.000264274722002</td>
+<td>0.000052854944425</td>
+<td>2.2142974355893608</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214271008115956</td>
+<td>2.214403145477065</td>
+<td>0.000132137361109</td>
+<td>0.000026427472225</td>
+<td>2.2142974355883296</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214284221852067</td>
+<td>2.214350290532635</td>
+<td>0.000066068680568</td>
+<td>0.000013213736114</td>
+<td>2.2142974355881986</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214290828720124</td>
+<td>2.214323863060410</td>
+<td>0.000033034340286</td>
+<td>0.000006606868057</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214294132154152</td>
+<td>2.214310649324296</td>
+<td>0.000016517170144</td>
+<td>0.000003303434029</td>
+<td>2.214297435588183</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214295783871167</td>
+<td>2.214304042456239</td>
+<td>0.000008258585072</td>
+<td>0.000001651717014</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214296609729674</td>
+<td>2.214300739022209</td>
+<td>0.000004129292535</td>
+<td>0.000000825858507</td>
+<td>2.2142974355881817</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.214297022658927</td>
+<td>2.214299087305196</td>
+<td>0.000002064646268</td>
+<td>0.000000412929253</td>
+<td>2.214297435588182</td>
+</tr>
+<tr>
+<td>21</td>
+<td>2.214297229123554</td>
+<td>2.214298261446689</td>
+<td>0.000001032323135</td>
+<td>0.000000206464627</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>22</td>
+<td>2.214297332355867</td>
+<td>2.214297848517435</td>
+<td>0.000000516161568</td>
+<td>0.000000103232313</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>23</td>
+<td>2.214297383972024</td>
+<td>2.214297642052808</td>
+<td>0.000000258080784</td>
+<td>0.000000051616157</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>24</td>
+<td>2.214297409780102</td>
+<td>2.214297538820495</td>
+<td>0.000000129040393</td>
+<td>0.000000025808078</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>25</td>
+<td>2.214297422684142</td>
+<td>2.214297487204338</td>
+<td>0.000000064520197</td>
+<td>0.000000012904039</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>26</td>
+<td>2.214297429136161</td>
+<td>2.214297461396259</td>
+<td>0.000000032260098</td>
+<td>0.000000006452019</td>
+<td>2.2142974355881817</td>
+</tr>
+<tr>
+<td>27</td>
+<td>2.214297432362171</td>
+<td>2.214297448492220</td>
+<td>0.000000016130049</td>
+<td>0.000000003226010</td>
+<td>2.214297435588182</td>
+</tr>
+<tr>
+<td>28</td>
+<td>2.214297433975176</td>
+<td>2.214297442040201</td>
+<td>0.000000008065025</td>
+<td>0.000000001613005</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>29</td>
+<td>2.214297434781678</td>
+<td>2.214297438814191</td>
+<td>0.000000004032513</td>
+<td>0.000000000806502</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>30</td>
+<td>2.214297435184930</td>
+<td>2.214297437201187</td>
+<td>0.000000002016257</td>
+<td>0.000000000403251</td>
+<td>2.2142974355881826</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged
+<strong>Final Value</strong>: 2.214297435184930 in 30 iterations
+<strong>Final Error</strong>: 0.000000000403251
+<strong>Convergence Rate</strong>: 1.000395431162525</p>
+<h4>Examples with Relative Error Criterion ∣xₙ₊₁ − xₙ∣/|xₙ₊₁| &lt; ε</h4>
+<p><img alt="Fixed-point Method Graph with Relative Criterion" src="plots/fixed_point_graph_100_1e-06.png" /></p>
+<h5>Fixed-point Method with Relative Criterion (ε = 0.000001000000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>g(xₙ)</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>3.063304934288476</td>
+<td>1.063304934288475</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.106330493428847</td>
+<td>2.645117019011117</td>
+<td>0.538786525582269</td>
+<td>0.107966942159333</td>
+<td>0.050481391101999</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.160209145987074</td>
+<td>2.430518748595957</td>
+<td>0.270309602608882</td>
+<td>0.054088289601106</td>
+<td>0.024941405631170</td>
+<td>2.215553422819048</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.187240106247963</td>
+<td>2.322510246348561</td>
+<td>0.135270140100598</td>
+<td>0.027057329340218</td>
+<td>0.012358478698188</td>
+<td>2.214455585497856</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.200767120258022</td>
+<td>2.268416632771748</td>
+<td>0.067649512513726</td>
+<td>0.013530315330159</td>
+<td>0.006146499502625</td>
+<td>2.214317241432201</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.207532071509395</td>
+<td>2.241358633860802</td>
+<td>0.033826562351407</td>
+<td>0.006765364078786</td>
+<td>0.003064486056027</td>
+<td>2.2142999124873044</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.210914727744536</td>
+<td>2.227828234706653</td>
+<td>0.016913506962118</td>
+<td>0.003382707843645</td>
+<td>0.001529980416111</td>
+<td>2.214297745237162</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.212606078440747</td>
+<td>2.221062860145878</td>
+<td>0.008456781705130</td>
+<td>0.001691357147434</td>
+<td>0.000764415642121</td>
+<td>2.2142974742954493</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.213451756611260</td>
+<td>2.217680150991858</td>
+<td>0.004228394380597</td>
+<td>0.000845678976920</td>
+<td>0.000382063068683</td>
+<td>2.214297440426624</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213874596049320</td>
+<td>2.215988793680623</td>
+<td>0.002114197631303</td>
+<td>0.000422839538861</td>
+<td>0.000190995207594</td>
+<td>2.2142974361929864</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214086015812450</td>
+<td>2.215143114683228</td>
+<td>0.001057098870778</td>
+<td>0.000211419775730</td>
+<td>0.000095488504792</td>
+<td>2.2142974356637812</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214191725699528</td>
+<td>2.214720275141808</td>
+<td>0.000528549442280</td>
+<td>0.000105709888653</td>
+<td>0.000047741975481</td>
+<td>2.2142974355976306</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214244580643756</td>
+<td>2.214508855365758</td>
+<td>0.000264274722002</td>
+<td>0.000052854944425</td>
+<td>0.000023870418241</td>
+<td>2.2142974355893608</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214271008115956</td>
+<td>2.214403145477065</td>
+<td>0.000132137361109</td>
+<td>0.000026427472225</td>
+<td>0.000011935066712</td>
+<td>2.2142974355883296</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214284221852067</td>
+<td>2.214350290532635</td>
+<td>0.000066068680568</td>
+<td>0.000013213736114</td>
+<td>0.000005967497750</td>
+<td>2.2142974355881986</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214290828720124</td>
+<td>2.214323863060410</td>
+<td>0.000033034340286</td>
+<td>0.000006606868057</td>
+<td>0.000002983739973</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214294132154152</td>
+<td>2.214310649324296</td>
+<td>0.000016517170144</td>
+<td>0.000003303434029</td>
+<td>0.000001491867761</td>
+<td>2.214297435588183</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214295783871167</td>
+<td>2.214304042456239</td>
+<td>0.000008258585072</td>
+<td>0.000001651717014</td>
+<td>0.000000745933324</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214296609729674</td>
+<td>2.214300739022209</td>
+<td>0.000004129292535</td>
+<td>0.000000825858507</td>
+<td>0.000000372966523</td>
+<td>2.2142974355881817</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged
+<strong>Final Value</strong>: 2.214296609729674 in 19 iterations
+<strong>Final Error</strong>: 0.000000825858507
+<strong>Convergence Rate</strong>: 1.000651298408151</p>
+<p><img alt="Fixed-point Method Graph with Relative Criterion" src="plots/fixed_point_graph_101_1e-09.png" /></p>
+<h5>Fixed-point Method with Relative Criterion (ε = 0.000000001000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>g(xₙ)</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Rel. Difference</th>
+<th>Aitken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>3.063304934288476</td>
+<td>1.063304934288475</td>
+<td>0.214297435588181</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.106330493428847</td>
+<td>2.645117019011117</td>
+<td>0.538786525582269</td>
+<td>0.107966942159333</td>
+<td>0.050481391101999</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.160209145987074</td>
+<td>2.430518748595957</td>
+<td>0.270309602608882</td>
+<td>0.054088289601106</td>
+<td>0.024941405631170</td>
+<td>2.215553422819048</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.187240106247963</td>
+<td>2.322510246348561</td>
+<td>0.135270140100598</td>
+<td>0.027057329340218</td>
+<td>0.012358478698188</td>
+<td>2.214455585497856</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.200767120258022</td>
+<td>2.268416632771748</td>
+<td>0.067649512513726</td>
+<td>0.013530315330159</td>
+<td>0.006146499502625</td>
+<td>2.214317241432201</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.207532071509395</td>
+<td>2.241358633860802</td>
+<td>0.033826562351407</td>
+<td>0.006765364078786</td>
+<td>0.003064486056027</td>
+<td>2.2142999124873044</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.210914727744536</td>
+<td>2.227828234706653</td>
+<td>0.016913506962118</td>
+<td>0.003382707843645</td>
+<td>0.001529980416111</td>
+<td>2.214297745237162</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.212606078440747</td>
+<td>2.221062860145878</td>
+<td>0.008456781705130</td>
+<td>0.001691357147434</td>
+<td>0.000764415642121</td>
+<td>2.2142974742954493</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.213451756611260</td>
+<td>2.217680150991858</td>
+<td>0.004228394380597</td>
+<td>0.000845678976920</td>
+<td>0.000382063068683</td>
+<td>2.214297440426624</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.213874596049320</td>
+<td>2.215988793680623</td>
+<td>0.002114197631303</td>
+<td>0.000422839538861</td>
+<td>0.000190995207594</td>
+<td>2.2142974361929864</td>
+</tr>
+<tr>
+<td>11</td>
+<td>2.214086015812450</td>
+<td>2.215143114683228</td>
+<td>0.001057098870778</td>
+<td>0.000211419775730</td>
+<td>0.000095488504792</td>
+<td>2.2142974356637812</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2.214191725699528</td>
+<td>2.214720275141808</td>
+<td>0.000528549442280</td>
+<td>0.000105709888653</td>
+<td>0.000047741975481</td>
+<td>2.2142974355976306</td>
+</tr>
+<tr>
+<td>13</td>
+<td>2.214244580643756</td>
+<td>2.214508855365758</td>
+<td>0.000264274722002</td>
+<td>0.000052854944425</td>
+<td>0.000023870418241</td>
+<td>2.2142974355893608</td>
+</tr>
+<tr>
+<td>14</td>
+<td>2.214271008115956</td>
+<td>2.214403145477065</td>
+<td>0.000132137361109</td>
+<td>0.000026427472225</td>
+<td>0.000011935066712</td>
+<td>2.2142974355883296</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2.214284221852067</td>
+<td>2.214350290532635</td>
+<td>0.000066068680568</td>
+<td>0.000013213736114</td>
+<td>0.000005967497750</td>
+<td>2.2142974355881986</td>
+</tr>
+<tr>
+<td>16</td>
+<td>2.214290828720124</td>
+<td>2.214323863060410</td>
+<td>0.000033034340286</td>
+<td>0.000006606868057</td>
+<td>0.000002983739973</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>17</td>
+<td>2.214294132154152</td>
+<td>2.214310649324296</td>
+<td>0.000016517170144</td>
+<td>0.000003303434029</td>
+<td>0.000001491867761</td>
+<td>2.214297435588183</td>
+</tr>
+<tr>
+<td>18</td>
+<td>2.214295783871167</td>
+<td>2.214304042456239</td>
+<td>0.000008258585072</td>
+<td>0.000001651717014</td>
+<td>0.000000745933324</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>19</td>
+<td>2.214296609729674</td>
+<td>2.214300739022209</td>
+<td>0.000004129292535</td>
+<td>0.000000825858507</td>
+<td>0.000000372966523</td>
+<td>2.2142974355881817</td>
+</tr>
+<tr>
+<td>20</td>
+<td>2.214297022658927</td>
+<td>2.214299087305196</td>
+<td>0.000002064646268</td>
+<td>0.000000412929253</td>
+<td>0.000000186483227</td>
+<td>2.214297435588182</td>
+</tr>
+<tr>
+<td>21</td>
+<td>2.214297229123554</td>
+<td>2.214298261446689</td>
+<td>0.000001032323135</td>
+<td>0.000000206464627</td>
+<td>0.000000093241605</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>22</td>
+<td>2.214297332355867</td>
+<td>2.214297848517435</td>
+<td>0.000000516161568</td>
+<td>0.000000103232313</td>
+<td>0.000000046620800</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>23</td>
+<td>2.214297383972024</td>
+<td>2.214297642052808</td>
+<td>0.000000258080784</td>
+<td>0.000000051616157</td>
+<td>0.000000023310400</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>24</td>
+<td>2.214297409780102</td>
+<td>2.214297538820495</td>
+<td>0.000000129040393</td>
+<td>0.000000025808078</td>
+<td>0.000000011655200</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>25</td>
+<td>2.214297422684142</td>
+<td>2.214297487204338</td>
+<td>0.000000064520197</td>
+<td>0.000000012904039</td>
+<td>0.000000005827600</td>
+<td>2.2142974355881826</td>
+</tr>
+<tr>
+<td>26</td>
+<td>2.214297429136161</td>
+<td>2.214297461396259</td>
+<td>0.000000032260098</td>
+<td>0.000000006452019</td>
+<td>0.000000002913800</td>
+<td>2.2142974355881817</td>
+</tr>
+<tr>
+<td>27</td>
+<td>2.214297432362171</td>
+<td>2.214297448492220</td>
+<td>0.000000016130049</td>
+<td>0.000000003226010</td>
+<td>0.000000001456900</td>
+<td>2.214297435588182</td>
+</tr>
+<tr>
+<td>28</td>
+<td>2.214297433975176</td>
+<td>2.214297442040201</td>
+<td>0.000000008065025</td>
+<td>0.000000001613005</td>
+<td>0.000000000728450</td>
+<td>2.214297435588181</td>
+</tr>
+<tr>
+<td>29</td>
+<td>2.214297434781678</td>
+<td>2.214297438814191</td>
+<td>0.000000004032513</td>
+<td>0.000000000806502</td>
+<td>0.000000000364225</td>
+<td>2.214297435588181</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged
+<strong>Final Value</strong>: 2.214297434781678 in 29 iterations
+<strong>Final Error</strong>: 0.000000000806502
+<strong>Convergence Rate</strong>: 1.000410076761137</p>
+<h4>Comparison of Stopping Criteria for Fixed-point Method</h4>
+<p><img alt="Stopping Criteria Comparison" src="plots/stopping_criteria_Fixed-point_1e-06.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Iterations</th>
+<th>Final Value</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Absolute</td>
+<td>20</td>
+<td>2.214297022658927</td>
+<td>0.000000412929253</td>
+</tr>
+<tr>
+<td>Relative</td>
+<td>19</td>
+<td>2.214296609729674</td>
+<td>0.000000825858507</td>
+</tr>
+</tbody>
+</table>
+<h3>5. Aitken's Acceleration</h3>
+<h4>Mathematical Formula</h4>
+<p>For a sequence {p_n} converging to limit p, Aitken's Δ^2 method produces:</p>
+<p>p̂_n = p_n - (Δ p_n)^2⁄Δ^2 p_n</p>
+<p>where:
+- Δ p_n = p_{n+1} - p_n (forward difference)
+- Δ^2 p_n = Δ p_{n+1} - Δ p_n = p_{n+2} - 2p_{n+1} + p_n (second difference)</p>
+<p>Expanded form:
+p̂<em n_1="n+1">n = p_n - \frac{(p</em>} - p_n)^2}{p_{n+2} - 2p_{n+1} + p_n</p>
+<h4>Algorithm</h4>
+<ol>
+<li><strong>Input</strong>: Sequence {p_0, p_1, p_2, \ldots}, tolerance \epsilon</li>
+<li><strong>For each</strong> n ≥ 0 where p_{n+2} exists:</li>
+<li>Compute Δ^2 p_n = p_{n+2} - 2p_{n+1} + p_n</li>
+<li>If |Δ^2 p_n| &lt; \text{small threshold}, skip (avoid division by zero)</li>
+<li>Compute p̂<em n_1="n+1">n = p_n - \frac{(p</em>} - p_n)^2}{Δ^2 p_n</li>
+<li><strong>Return</strong> accelerated sequence</li>
+</ol>
+<h4>Implementation</h4>
+<pre><code class="language-python">def aitken_acceleration(sequence, epsilon=1e-6):
+    if len(sequence) &lt; 3:
+        return sequence, &quot;Short sequence - minimum 3 elements needed&quot;
+
+    aitken_sequence = []
+
+    for i in range(len(sequence) - 2):
+        p0, p1, p2 = sequence[i], sequence[i + 1], sequence[i + 2]
+
+        denominator = p0 + p2 - 2 * p1
+        if abs(denominator) &lt; 1e-19:
+            accelerated = p2
+        else:
+            accelerated = p0 - ((p1 - p0)**2 / denominator)
+
+        aitken_sequence.append(accelerated)
+
+    return aitken_sequence, &quot;First stopping condition (max iterations)&quot;
+
+</code></pre>
+<h3>6. Real-time Aitken's Acceleration with Fixed-point</h3>
+<h4>Mathematical Formula</h4>
+<p>This method applies Aitken's acceleration dynamically during the Fixed-point process:</p>
+<ol>
+<li>Generate a few iterations using Fixed-point: x_{n+1} = g(x_n)</li>
+<li>When three consecutive points are available, compute the Aitken accelerated value:
+   x̂<em n_1="n+1">n = x_n - \frac{(x</em>} - x_n)^2}{x_{n+2} - 2x_{n+1} + x_n</li>
+<li>Replace the current approximation with the accelerated value and continue</li>
+</ol>
+<h4>Algorithm</h4>
+<ol>
+<li><strong>Input</strong>: Function f, initial guess x₍0₎, tolerance \epsilon, max iterations</li>
+<li><strong>Initialize</strong>: Set n = 0, sequence = [x₍0₎]</li>
+<li><strong>Iterate</strong>:</li>
+<li>Compute next Fixed-point value: x_{n+1} = g(x_n)</li>
+<li>Add x_{n+1} to sequence</li>
+<li>If at least 3 points exist in sequence, apply Aitken acceleration</li>
+<li>If accelerated value meets convergence criterion, return it</li>
+<li>Otherwise, continue with the next Fixed-point</li>
+<li><strong>Return</strong> final value and performance metrics</li>
+</ol>
+<h4>Implementation</h4>
+<pre><code class="language-python">def fixed_point_with_aitken(f, x0, g, epsilon=1e-6, max_iterations=20, condition=stopping_condition_2):
+    regular_sequence = [x0]
+    aitken_values = {}
+
+    x = x0
+
+    method_info = {
+        'converged': False,
+        'convergence_type': None,
+        'final_value': None,
+        'iterations': 0,
+        'aitken_applications': 0
+    }
+
+    for k in range(max_iterations):
+        x_new = g(x)
+        regular_sequence.append(x_new)
+        method_info['iterations'] = k + 1
+
+        if k ≥ 2:
+            p0, p1, p2 = regular_sequence[k -
+                                          2], regular_sequence[k - 1], regular_sequence[k]
+            denominator = p2 - 2 * p1 + p0
+
+            if abs(denominator) &gt; 1e-19:
+                aitken_val = p0 - (p1 - p0)**2 / denominator
+                aitken_values[k] = aitken_val
+                method_info['aitken_applications'] += 1
+
+                if (k - 1) in aitken_values:
+                    if condition(aitken_val, aitken_values[k - 1], epsilon):
+                        method_info['converged'] = True
+                        method_info['convergence_type'] = 'Aitken acceleration'
+                        method_info['final_value'] = aitken_val
+                        break
+
+        x = x_new
+
+        if condition(regular_sequence[-1], regular_sequence[-2], epsilon):
+            method_info['converged'] = True
+            method_info['convergence_type'] = 'Regular iteration'
+            method_info['final_value'] = regular_sequence[-1]
+            break
+
+        if abs(x) &gt; 1e10:
+            method_info['convergence_type'] = 'Diverged'
+            method_info['final_value'] = x
+            break
+
+    if not method_info['converged'] and method_info['convergence_type'] != 'Diverged':
+        method_info['convergence_type'] = 'Max iterations reached'
+        if aitken_values:
+            last_aitken_key = max(aitken_values.keys())
+            method_info['final_value'] = aitken_values[last_aitken_key]
+        else:
+            method_info['final_value'] = regular_sequence[-1]
+
+    return regular_sequence, aitken_values, method_info
+
+</code></pre>
+<h4>Examples with Real-time Aitken Acceleration</h4>
+<p><img alt="Fixed-point with Real-time Aitken Acceleration" src="plots/fixed_point_aitken_graph_0_1e-06.png" /></p>
+<h5>Fixed-point with Real-time Aitken (ε = 0.000001000000000)</h5>
+<table>
+<thead>
+<tr>
+<th>Iteration</th>
+<th>xₙ</th>
+<th>f(xₙ)</th>
+<th>Error</th>
+<th>Aitken Applied</th>
+<th>Acceleration Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.000000000000000</td>
+<td>1.063304934288475</td>
+<td>0.214297435588181</td>
+<td>Yes</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2.106330493428847</td>
+<td>0.538786525582269</td>
+<td>0.107966942159333</td>
+<td>Yes</td>
+<td>682.687346342903993x faster</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.160209145987074</td>
+<td>0.270309602608882</td>
+<td>0.054088289601106</td>
+<td>Yes</td>
+<td>Excellent</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.187240106247963</td>
+<td>0.135270140100598</td>
+<td>0.027057329340218</td>
+<td>Yes</td>
+<td>Excellent</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.200767120258022</td>
+<td>0.067649512513726</td>
+<td>0.013530315330159</td>
+<td>Yes</td>
+<td>Excellent</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2.207532071509395</td>
+<td>0.033826562351407</td>
+<td>0.006765364078786</td>
+<td>Yes</td>
+<td>Excellent</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2.210914727744536</td>
+<td>0.016913506962118</td>
+<td>0.003382707843645</td>
+<td>Yes</td>
+<td>Excellent</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2.212606078440747</td>
+<td>0.008456781705130</td>
+<td>0.001691357147434</td>
+<td>No</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>9</td>
+<td>2.213451756611260</td>
+<td>0.004228394380597</td>
+<td>0.000845678976920</td>
+<td>No</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>: Converged to 2.214297474295448 in 8 iterations
+<strong>Final Error</strong>: 0.000000038707267
+<strong>Aitken Applications</strong>: 6
+<strong>Acceleration Effect</strong>: Significant improvement over basic Fixed-point</p>
+<h2>Performance Analysis</h2>
+<h3>Summary Table</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Avg Iterations</th>
+<th>Avg Time (ms)</th>
+<th>Avg Error</th>
+<th>Convergence Rate</th>
+<th>Success Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bisection</td>
+<td>25.500000000000000</td>
+<td>0.034868717193604</td>
+<td>0.000000466130685</td>
+<td>1.321536756744824</td>
+<td>40.000000000000000%</td>
+</tr>
+<tr>
+<td>Newton</td>
+<td>5.500000000000000</td>
+<td>0.007688999176025</td>
+<td>0.000000000000000</td>
+<td>3.004455781252174</td>
+<td>40.000000000000000%</td>
+</tr>
+<tr>
+<td>Secant</td>
+<td>3.555555555555555</td>
+<td>0.003602769639757</td>
+<td>0.000000000000000</td>
+<td>5.410312797770888</td>
+<td>90.000000000000000%</td>
+</tr>
+<tr>
+<td>Fixed-point</td>
+<td>24.500000000000000</td>
+<td>0.022768974304199</td>
+<td>0.000000309999379</td>
+<td>1.000517980368379</td>
+<td>40.000000000000000%</td>
+</tr>
+<tr>
+<td>Bisection + Aitken</td>
+<td>23.500000000000000</td>
+<td>0.016093254089355</td>
+<td>0.000000406817079</td>
+<td>0.228259968535387</td>
+<td>40.000000000000000%</td>
+</tr>
+<tr>
+<td>Fixed-point + Aitken</td>
+<td>22.500000000000000</td>
+<td>0.011503696441650</td>
+<td>0.000000000000001</td>
+<td>1.009092223122644</td>
+<td>40.000000000000000%</td>
+</tr>
+<tr>
+<td>Real-time Aitken</td>
+<td>9.750000000000000</td>
+<td>0.026226043701172</td>
+<td>0.000449276454738</td>
+<td>1.001410231401462</td>
+<td>40.000000000000000%</td>
+</tr>
+<tr>
+<td>Periodic Aitken</td>
+<td>8.000000000000000</td>
+<td>0.017523765563965</td>
+<td>0.000000000000015</td>
+<td>1.931300996100426</td>
+<td>20.000000000000000%</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
