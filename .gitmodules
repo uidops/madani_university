@@ -1,0 +1,3 @@
+[submodule "ghavidel_projects/compiler/dolme"]
+	path = ghavidel_projects/compiler/dolme
+	url = https://github.com/uidops/dolme.git
