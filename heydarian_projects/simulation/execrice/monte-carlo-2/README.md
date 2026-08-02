@@ -18,6 +18,8 @@ The program estimates the overlapping area of two circles:
 
 Random points are sampled uniformly in the bounding square. Points inside both circles are counted as hits. The estimated area is `area_box × hits / n`. A scatter plot is saved to `image.png` (green = inside both, grey = outside).
 
+![Monte Carlo Intersection Plot](image.png)
+
 ## Run
 
 From this directory:

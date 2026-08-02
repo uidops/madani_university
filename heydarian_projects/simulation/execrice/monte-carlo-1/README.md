@@ -19,6 +19,8 @@ The program computes the definite integral using three approaches:
 
 It prints the estimated area for each method and saves a plot to `image.png` showing the function curve with Monte Carlo sample points (green = hit, red = miss).
 
+![Monte Carlo Integration Plot](image.png)
+
 The exact value is `148.5`.
 
 ## Run

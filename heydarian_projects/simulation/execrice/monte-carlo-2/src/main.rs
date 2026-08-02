@@ -36,7 +36,7 @@ fn monte_carlo(c1: Disc, c2: Disc, n: usize, seed: u64) -> (f64, Vec<(f64, f64, 
     let mut hits = 0usize;
     let mut samples = Vec::with_capacity(8000);
 
-    for _ in 0..n {
+    for i in 0..n {
         // random point in the square bounding box
         let x = rng.random_range(sxmin..sxmax);
         let y = rng.random_range(symin..symax);
@@ -50,9 +50,9 @@ fn monte_carlo(c1: Disc, c2: Disc, n: usize, seed: u64) -> (f64, Vec<(f64, f64, 
             hits += 1;
         }
 
-        // if i < 5000 {
-        samples.push((x, y, both));
-        // }
+        if i < 200_000 {
+            samples.push((x, y, both));
+        }
     }
 
     // area / area_box = hits / n    =>    area = area_box * hits / n

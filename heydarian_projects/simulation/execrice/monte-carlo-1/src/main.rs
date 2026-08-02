@@ -109,23 +109,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("image.png", (1200, 500)).into_drawing_area();
     root.fill(&WHITE)?;
 
-    let (left, right) = root.split_horizontally(600);
+    // let (left, right) = root.split_horizontally(600);
 
-    let mut chart1 = ChartBuilder::on(&left)
-        .caption("Function Area", ("sans-serif", 20))
-        .margin(10)
-        .build_cartesian_2d(a..b, 0.0..60.0)?;
+    // let mut chart1 = ChartBuilder::on(&left)
+    //     .caption("Function Area", ("sans-serif", 20))
+    //     .margin(10)
+    //     .build_cartesian_2d(a..b, 0.0..60.0)?;
 
-    chart1.configure_mesh().draw()?;
-    chart1.draw_series(LineSeries::new(
-        (0..400).map(|i| {
-            let x = a + (b - a) * i as f64 / 400.0;
-            (x, f(x))
-        }),
-        &BLUE,
-    ))?;
+    // chart1.configure_mesh().draw()?;
+    // chart1.draw_series(LineSeries::new(
+    //     (0..400).map(|i| {
+    //         let x = a + (b - a) * i as f64 / 400.0;
+    //         (x, f(x))
+    //     }),
+    //     &BLUE,
+    // ))?;
 
     let sample_n = 4000.min(n);
+    // let sample_n = n;
     let mut hits_points = Vec::new();
     let mut miss_points = Vec::new();
 
@@ -137,7 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    let mut chart2 = ChartBuilder::on(&right)
+    let mut chart2 = ChartBuilder::on(&root)
         .caption("Monte Carlo", ("sans-serif", 20))
         .margin(10)
         .build_cartesian_2d(a..b, 0.0..y_max)?;
