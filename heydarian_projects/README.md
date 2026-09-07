@@ -7,5 +7,6 @@ This directory contains my course projects for Professor Mohsen Heydarian.
 | Directory | Description |
 | --- | --- |
 | `simulation/` | Simulation exercises implemented in Rust. |
+| `network/` | Routing exercises and network algorithm notes. |
 
 Each course or project directory includes its own `README.md` with more specific notes.
