@@ -1,7 +1,5 @@
 package main
 
-// Javad Bajelan - 4011833206
-
 import (
 	"fmt"
 	"sort"

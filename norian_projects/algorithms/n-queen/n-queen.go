@@ -1,7 +1,5 @@
 package main
 
-// javad bajelan - 4011833206
-
 import "fmt"
 
 func is_safe(matrix [][]bool, row, col int) bool {
