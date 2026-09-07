@@ -7,7 +7,7 @@ This directory contains my algorithm course projects for Professor Farshid Noria
 | Directory | Description |
 | --- | --- |
 | `activity_selection/` | Greedy activity-selection algorithm. |
-| `djikstra/` | Dijkstra shortest-path algorithm. |
+| `dijkstra/` | Dijkstra shortest-path algorithm. |
 | `kruskal/` | Kruskal minimum-spanning-tree algorithm. |
 | `n-queen/` | Backtracking solution for the N-Queen problem. |
 | `obst/` | Optimal binary search tree dynamic-programming exercise. |
