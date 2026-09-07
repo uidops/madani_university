@@ -10,7 +10,7 @@ Most work is organized by professor or course name. Each top-level `*_projects` 
 | --- | --- |
 | `ghadiri_projects/` | Assembly and C exercises such as factorial and pyramid programs. |
 | `ghavidel_projects/` | Professor Jalil Ghavidel course projects, including AI and compiler design work. |
-| `heydarian_projects/` | Professor Mohsen Heydarian simulation projects, including random-walk and genetic-algorithm Rust exercises. |
+| `heydarian_projects/` | Professor Mohsen Heydarian course projects, including Rust simulation exercises and routing/network algorithm notes. |
 | `imanzadeh_projects/` | Professor Sodabeh Imanzadeh projects, including web-designing exercises and database setup. |
 | `mehanfar_projects/` | Professor Mehanfar assignments, including algorithm analysis and C data-structure exercises. |
 | `norian_projects/` | Professor Farshid Norian algorithm projects, including Kruskal, Dijkstra, N-Queen, TSP, OBST, and scheduling. |
